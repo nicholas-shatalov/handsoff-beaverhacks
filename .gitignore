@@ -1,1 +1,11 @@
 venv/
+# Ignore the generated IPC files, but keep the folder structure
+ipc_data/*
+!ipc_data/.gitkeep
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore environment variables/API keys
+.env
