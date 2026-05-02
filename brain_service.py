@@ -24,7 +24,8 @@ ACTION_FILE = os.path.join(IPC_FOLDER, "action.json")
 SYSTEM_PROMPT = """
 You are OmniAccess, an autonomous accessibility agent. 
 You will be provided with a screenshot of a user's computer screen and a user goal.
-Your task is to locate the UI element required to achieve the goal and output its EXACT pixel coordinates.
+Before calculating coordinates, identify key UI landmarks such as headers, navbars, dialogs, forms, or buttons that help locate the target element.
+Then locate the UI element required to achieve the goal and output its coordinates as percentages relative to the screen size.
 
 CRITICAL INSTRUCTIONS:
 1. You must output ONLY valid JSON.
@@ -33,8 +34,8 @@ CRITICAL INSTRUCTIONS:
 4. Use the following schema:
 {
   "action": "click" | "type" | "error",
-  "x": int (0 if error),
-  "y": int (0 if error),
+  "x": float (0.0-100.0, 0 if error),
+  "y": float (0.0-100.0, 0 if error),
   "text": "string (Type text here, OR put the error reason here)"
 }
 """
@@ -74,11 +75,39 @@ def ask_nemotron(base64_image):
     )
 
     # Print the model's internal reasoning to the terminal (Great for demo!)
-    reasoning = getattr(completion.choices[0].message, "reasoning_content", None)
+    reasoning = None
+    if completion.choices and len(completion.choices) > 0:
+        reasoning = getattr(completion.choices[0].message, "reasoning_content", None)
     if reasoning:
         print(f"\n🤔 Internal Logic:\n{reasoning}\n")
-        
+
+    if not completion.choices or len(completion.choices) == 0:
+        return None
+
     return completion.choices[0].message.content
+
+
+def normalize_ai_response(ai_response):
+    """Safely convert the model response into a JSON-able Python object."""
+    if ai_response is None:
+        return None
+
+    if isinstance(ai_response, dict):
+        return ai_response
+
+    response_text = str(ai_response).strip()
+    if response_text.lower() == "none":
+        return None
+
+    cleaned = response_text.replace("```json", "").replace("```", "").strip()
+    if not cleaned:
+        return None
+
+    try:
+        return json.loads(cleaned)
+    except json.JSONDecodeError:
+        return None
+
 
 def start_brain_service():
     """The infinite loop that watches the folder for new screenshots."""
@@ -91,18 +120,20 @@ def start_brain_service():
                 base64_img = encode_image(IMAGE_FILE)
                 ai_response = ask_nemotron(base64_img)
                 
-                # NEW SAFETY CHECK: If the AI returns None, skip processing
-                if not ai_response:
-                    print("❌ Error: Nemotron returned an empty response.")
-                    continue 
+                json_data = normalize_ai_response(ai_response)
+                if not json_data or not isinstance(json_data, dict):
+                    error_payload = {
+                        "action": "error",
+                        "x": 0,
+                        "y": 0,
+                        "text": "AI returned no valid response or could not find the target element."
+                    }
+                    with open(ACTION_FILE, "w") as f:
+                        json.dump(error_payload, f)
+                    print("❌ Error: Invalid or missing AI response; saved fallback error action.")
+                    continue
 
-                print(f"✅ Final Decision: {ai_response}")
-                
-                # Strip any accidental markdown the AI might add
-                clean_json_string = ai_response.replace("```json", "").replace("```", "").strip()
-                
-                # Parse it into a real Python dictionary
-                json_data = json.loads(clean_json_string)
+                print(f"✅ Final Decision: {json.dumps(json_data)}")
                 
                 # Save it for Member 4
                 with open(ACTION_FILE, "w") as f:
