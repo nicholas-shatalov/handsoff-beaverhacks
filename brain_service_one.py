@@ -15,42 +15,38 @@ client = OpenAI(
 )
 
 # 3. Define the IPC Inter-Process Communication paths
-IPC_FOLDER = "ipc_data"
-TRIGGER_FILE = os.path.join(IPC_FOLDER, "trigger.txt")
-IMAGE_FILE = os.path.join(IPC_FOLDER, "current_screen.png")
-ACTION_FILE = os.path.join(IPC_FOLDER, "action.json")
+IPC_FOLDER = "ipc_data_one"
+IPC_FOLDER_TWO = "ipc_data_two"
+TRIGGER_FILE_ONE = os.path.join(IPC_FOLDER, "trigger1.txt")
+TRIGGER_FILE_TWO = os.path.join(IPC_FOLDER, "trigger2.txt")
+TRANSCRIPT_FILE = os.path.join(IPC_FOLDER, "transcript.txt")
+KEYWORD_FILE = os.path.join(IPC_FOLDER, "keyword.txt")
+USER_GOAL_FILE = os.path.join(IPC_FOLDER_TWO, "user_goal.txt")
+OUTPUT_TRIGGER = os.path.join(IPC_FOLDER_TWO, "trigger.txt")
+USER_DATA = ""
 
 # 4. The Master Prompt (Forces strict JSON output)
 SYSTEM_PROMPT = """
-You are OmniAccess, an autonomous accessibility agent. 
-You will be provided with a screenshot of a user's computer screen and a user goal.
-Before calculating coordinates, identify key UI landmarks such as headers, navbars, dialogs, forms, or buttons that help locate the target element.
-Then locate the UI element required to achieve the goal and output its coordinates as percentages relative to the screen size.
+You are the Interpreter (Agent 1) for an AI agent system called HandsOff, an autonomous accessibility agent. Your job is to translate raw, messy user inputs (audio transcripts or physical gesture descriptions) into a single, clear computer command.
+Physical gesture descriptions will come with one word. Audio transcripts will come into the form of a long text.
+RULES:
 
-CRITICAL INSTRUCTIONS:
-1. You must output ONLY valid JSON.
-2. No markdown formatting, no backticks, no conversational text.
-3. If the target element is NOT visible on the screen, set the action to "error".
-4. Use the following schema:
-{
-  "action": "click" | "type" | "error",
-  "x": float (0.0-100.0, 0 if error),
-  "y": float (0.0-100.0, 0 if error),
-  "text": "string (Type text here, OR put the error reason here)"
-}
+You must condense the input into exactly one short sentence.
+
+You must NOT include any conversational filler (e.g., do not say 'Here is the goal' or 'The user wants to').
+
+You must format your output strictly starting with this exact phrase: 'Action requested: [insert specific action here]
 """
 
-# Let's test it on a button actually on your screen!
-USER_GOAL = "Find the 'Google Search' box in the middle of the screen and click it."
 
-def encode_image(image_path):
-    """Converts the screenshot into a format the AI can read."""
-    with open(image_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode('utf-8')
+def read_file(path):
+    with open(path, 'r') as f:
+        for line in f:
+            return line.strip()
 
-def ask_nemotron(base64_image):
-    """Sends the image and prompt to the Nemotron Omni model."""
-    print("🧠 Thinking...")
+
+def ask_nemotron(text_input):
+    print("Nemotron One Thinking...")
     
     completion = client.chat.completions.create(
       model="nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
@@ -62,8 +58,8 @@ def ask_nemotron(base64_image):
           {
               "role": "user",
               "content": [
-                  {"type": "text", "text": f"User Goal: {USER_GOAL}"},
-                  {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{base64_image}"}}
+                  {"type": "text", "text": f"User Goal: {USER_DATA}"},
+                  {"type": "text", "text": f"Data: {text_input}"}
               ]
           }
       ],
@@ -79,7 +75,7 @@ def ask_nemotron(base64_image):
     if completion.choices and len(completion.choices) > 0:
         reasoning = getattr(completion.choices[0].message, "reasoning_content", None)
     if reasoning:
-        print(f"\n🤔 Internal Logic:\n{reasoning}\n")
+        print(f"\nInternal Logic:\n{reasoning}\n")
 
     if not completion.choices or len(completion.choices) == 0:
         return None
@@ -88,12 +84,12 @@ def ask_nemotron(base64_image):
 
 
 def normalize_ai_response(ai_response):
-    """Safely convert the model response into a JSON-able Python object."""
+    """Safely convert the model response into a cleaned string."""
     if ai_response is None:
         return None
 
-    if isinstance(ai_response, dict):
-        return ai_response
+    if isinstance(ai_response, (list, dict)):
+        return json.dumps(ai_response)
 
     response_text = str(ai_response).strip()
     if response_text.lower() == "none":
@@ -103,51 +99,63 @@ def normalize_ai_response(ai_response):
     if not cleaned:
         return None
 
-    try:
-        return json.loads(cleaned)
-    except json.JSONDecodeError:
-        return None
+    return cleaned
+
+
+def create_trigger_for_two():
+    """Create a trigger file in ipc_data_two to signal brain_service_two that processing is complete."""
+    trigger_path = os.path.join("ipc_data_two", "trigger.txt")
+    with open(trigger_path, "w") as f:
+        f.write("done")
+    print("Created trigger for brain_service_two")
 
 
 def start_brain_service():
-    """The infinite loop that watches the folder for new screenshots."""
-    print("🧠 Brain Service Started. Watching for triggers in the ipc_data/ folder...")
+    print("Brain Service Started. Watching for triggers in the ipc_data_one/ folder...")
     
-    while True:
-        # Check if Member 2 has dropped the trigger file AND the screenshot
-        if os.path.exists(TRIGGER_FILE) and os.path.exists(IMAGE_FILE):
-            try:
-                base64_img = encode_image(IMAGE_FILE)
-                ai_response = ask_nemotron(base64_img)
-                
-                json_data = normalize_ai_response(ai_response)
-                if not json_data or not isinstance(json_data, dict):
-                    error_payload = {
-                        "action": "error",
-                        "x": 0,
-                        "y": 0,
-                        "text": "AI returned no valid response or could not find the target element."
-                    }
-                    with open(ACTION_FILE, "w") as f:
-                        json.dump(error_payload, f)
-                    print("❌ Error: Invalid or missing AI response; saved fallback error action.")
-                    continue
+    # Check if Member 2 has dropped the trigger file AND the screenshot
+    if (os.path.exists(TRIGGER_FILE_ONE) and os.path.exists(TRANSCRIPT_FILE)) or \
+        (os.path.exists(TRIGGER_FILE_TWO) and os.path.exists(KEYWORD_FILE)):
+        try:
+            input = ''
+            if os.path.exists(TRANSCRIPT_FILE):
+                USER_DATA = "Here is a transcript of the user requests for action"
+                input = read_file(TRANSCRIPT_FILE)
+            elif os.path.exists(KEYWORD_FILE):
+                USER_DATA = "Here is the keyword that was obtained from the physical gesture"
+                input = read_file(KEYWORD_FILE)
+            else:
+                raise Exception
+            ai_response = ask_nemotron(input)
+            
+            output = normalize_ai_response(ai_response)
+            if not output or not isinstance(output, str):
+                error_payload = "error"
+                with open(USER_GOAL_FILE, "w") as f:
+                    f.write(error_payload)
+                print("Error: Invalid or missing AI response; saved fallback error action.")
+                return
 
-                print(f"✅ Final Decision: {json.dumps(json_data)}")
+            print(f"Final Decision: {output}")
+            
+            # Save it for Member 4
+            with open(USER_GOAL_FILE, "w") as f:
+                f.write(output)
+            print(f"Saved user_goal.txt")
+            
+            # Signal brain_service_two
+            create_trigger_for_two()
                 
-                # Save it for Member 4
-                with open(ACTION_FILE, "w") as f:
-                    json.dump(json_data, f)
-                print(f"💾 Saved action.json for execution.")
-                    
-            except Exception as e:
-                print(f"❌ Error processing frame: {e}")
-            finally:
-                # Delete the trigger file so we don't process it twice
-                os.remove(TRIGGER_FILE)
+        except Exception as e:
+            print(f"Error processing frame: {e}")
+        finally:
+            # Delete the trigger file so we don't process it twice
+            if os.path.exists(TRIGGER_FILE_ONE):
+                os.remove(TRIGGER_FILE_ONE)
+            if os.path.exists(TRIGGER_FILE_TWO):
+                os.remove(TRIGGER_FILE_TWO)
                 
-        # Pause briefly to prevent maxing out the CPU
-        time.sleep(0.2)
+
 
 if __name__ == "__main__":
     # If the ipc_data folder doesn't exist yet, create it safely

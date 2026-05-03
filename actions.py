@@ -4,6 +4,12 @@ import webbrowser
 import pyautogui
 import pygetwindow as gw
 import time
+import os
+
+IPC_FOLDER = "ipc_data_two"
+TOOLS_JSON_FILE = os.path.join(IPC_FOLDER, "tools.json")
+TRIGGER_FILE = os.path.join(IPC_FOLDER, "actiontrigger.txt")
+ACTION_FILE = os.path.join(IPC_FOLDER, "action.json")
 
 def open_application(app_name: str):
     try:
@@ -75,7 +81,7 @@ def search_on_youtube(query: str):
     url = f"https://www.youtube.com/results?search_query={query.replace(' ', '+')}"
     open_url(url)
 
-with open("tools.json") as file:
+with open(TOOLS_JSON_FILE) as file:
     # make a nested list dict based off json
     tools = json.load(file)
 
@@ -100,6 +106,18 @@ def execute_action(tool_name, tool_input):
     if function:
         # Unpack dictionary kwargs
         return function(**tool_input)
-
-execute_action("open_application", {"app_name": "notepad"})
-execute_action("press_key", {"key": "A"})
+    
+def execute_tasks():
+    print("Executing tasks started... checking for trigger")
+    if os.path.exists(TRIGGER_FILE) and os.path.exists(ACTION_FILE):
+        try:
+            with open(ACTION_FILE) as f:
+                actions = json.load(f)
+            for action in actions:
+                execute_action(action['name'], action['argument'])
+                print(f"Action: {action['name']} completed")
+        except Exception as e:
+            print("Actions failed")
+        finally:
+            os.remove(TRIGGER_FILE)
+                

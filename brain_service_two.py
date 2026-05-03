@@ -18,6 +18,7 @@ TOOLS_FILE = os.path.join(IPC_FOLDER, "tools.json")
 SCREENSHOT_FILE = os.path.join(IPC_FOLDER, "current_screen.jpg")
 USER_GOAL_FILE = os.path.join(IPC_FOLDER, "user_goal.txt")
 ACTION_FILE = os.path.join(IPC_FOLDER, "action.json")
+ACTION_TRIGGER = os.path.join(IPC_FOLDER, "actiontrigger.txt")
 
 def build_tools_prompt(tools_path: str) -> str:
     with open(tools_path) as f:
@@ -143,41 +144,43 @@ def normalize_ai_response(ai_response):
 def start_brain_service():
     print("Brain Service Two Started. Watching for triggers in the ipc_data_two/ folder...")
     
-    while True:
-        # Check if Member 2 has dropped the trigger file AND the screenshot
-        if os.path.exists(TRIGGER_FILE) and os.path.exists(SCREENSHOT_FILE) and os.path.exists(USER_GOAL_FILE):
-            try:
-                USER_GOAL = read_user_goal()
-                base64_img = encode_image(SCREENSHOT_FILE)
-                ai_response = ask_nemotron(base64_img)
-                
-                json_data = normalize_ai_response(ai_response)
-                # If error occurs, save error data in action file
-                if not json_data or not isinstance(json_data, dict):
-                    error_payload = {
-                        "name": "error", 
-                        "arguments": {"reason": "explanation of why goal is not achievable"}
-                    }
-                    with open(ACTION_FILE, "w") as f:
-                        json.dump(error_payload, f)
-                    print("Error: Invalid or missing AI response; saved fallback error action")
-                    continue
-
-                print(f"Final Decision: {json.dumps(json_data)}")
-                
-                # Save action file
+    # Check if Member 2 has dropped the trigger file AND the screenshot
+    if os.path.exists(TRIGGER_FILE) and os.path.exists(SCREENSHOT_FILE) and os.path.exists(USER_GOAL_FILE):
+        try:
+            USER_GOAL = read_user_goal()
+            base64_img = encode_image(SCREENSHOT_FILE)
+            ai_response = ask_nemotron(base64_img)
+            
+            json_data = normalize_ai_response(ai_response)
+            # If error occurs, save error data in action file
+            if not json_data or not isinstance(json_data, dict):
+                error_payload = {
+                    "name": "error", 
+                    "arguments": {"reason": "explanation of why goal is not achievable"}
+                }
                 with open(ACTION_FILE, "w") as f:
-                    json.dump(json_data, f)
-                print(f"Saved action.json for execution")
-                    
-            except Exception as e:
-                print(f"Error processing data: {e}")
-            finally:
-                # Delete the trigger file so we don't process it twice
-                os.remove(TRIGGER_FILE)
+                    json.dump(error_payload, f)
+                print("Error: Invalid or missing AI response; saved fallback error action")
+                return
+
+            print(f"Final Decision: {json.dumps(json_data)}")
+            
+            # Save action file
+            with open(ACTION_FILE, "w") as f:
+                json.dump(json_data, f)
+            print("Saved action.json for execution")
+            
+            with open(ACTION_TRIGGER, 'w') as f:
+                f.write("")
+            print("Wrote trigger for action tasks")
                 
-        # Pause briefly to prevent maxing out the CPU
-        time.sleep(0.2)
+        except Exception as e:
+            print(f"Error processing data: {e}")
+        finally:
+            # Delete the trigger file so we don't process it twice
+            os.remove(TRIGGER_FILE)
+                
+                
 
 if __name__ == "__main__":
     # If the ipc_data folder doesn't exist yet, create it safely

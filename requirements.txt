@@ -1,2 +1,17 @@
-mediapipe==0.10.11 --no-cache-dir
+setuptools
+nvidia-riva-client==2.25.1
+pyautogui
+pygetwindow
+mediapipe
+torch
+soundfile
+numpy
+pyaudio
+websockets
+nvidia-riva-client
+openai
 pywebview
+python-dotenv
+mss
+opencv-python
+matplotlib
