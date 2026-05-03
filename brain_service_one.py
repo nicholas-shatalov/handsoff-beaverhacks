@@ -63,6 +63,7 @@ def start_brain_service():
                 raise Exception
             
             ai_response = ai_client.ask_nemotron_one(user_goal=None, text_input=input, image_input=None)
+            print(f"AI Response: {ai_response}")
             output = normalize_ai_response(ai_response)
             if not output or not isinstance(output, str):
                 error_payload = "error"

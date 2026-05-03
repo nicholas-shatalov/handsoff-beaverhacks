@@ -4,12 +4,12 @@ def cache_model(client, cached_message):
     completion = client.chat.completions.create(
         model="nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
         messages=[*cached_message],  # prefix + small dynamic tail
-        temperature=0.1,
-        top_p=0.95,
-        max_tokens=1024,
+        temperature=0,
+        top_p=1,
+        max_tokens=4096,
         extra_body={
             "chat_template_kwargs": {"enable_thinking": True},
-            "reasoning_budget": 1024
+            "reasoning_budget": 8192
         },
         stream=False
     )
@@ -42,10 +42,10 @@ def run_nemotron(client, cached_message, user_goal, text_input, image_input, jso
     completion = client.chat.completions.create(
       model="nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
       messages=[*cached_message, dynamic_message],
-      temperature=0.1, 
-      top_p=0.95,
-      max_tokens=1024, 
-      extra_body={"chat_template_kwargs":{"enable_thinking":True},"reasoning_budget":1024},
+      temperature=0, 
+      top_p=1,
+      max_tokens=4096, 
+      extra_body={"chat_template_kwargs":{"enable_thinking":True},"reasoning_budget":8192},
       stream=False
     )
 

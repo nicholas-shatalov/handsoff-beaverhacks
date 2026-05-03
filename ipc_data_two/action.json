@@ -1,1 +1,1 @@
-{"name": "click", "arguments": {"x": 846, "y": 45}}
+{"name": "error", "arguments": {"reason": "No available action allows requesting clarification as the provided actions do not support communication or clarification requests."}}

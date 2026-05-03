@@ -24,30 +24,34 @@ def normalize_ai_response(ai_response):
     if ai_response is None:
         return None
 
-    if isinstance(ai_response, dict):
-        return [ai_response]  # wrap in list for consistency
-    
-    if isinstance(ai_response, list):
-        return ai_response  # already a list, return as is
+    if not isinstance(ai_response, str):
+        ai_response = str(ai_response)
 
-    response_text = str(ai_response).strip()
-    if response_text.lower() == "none":
-        return None
+    ai_response = ai_response.strip()
 
-    cleaned = response_text.replace("```json", "").replace("```", "").strip()
-    if not cleaned:
+    if ai_response.lower() == "none":
         return None
 
     try:
-        parsed = json.loads(cleaned)
-        # handle both single action {} and multiple actions [{}]
-        if isinstance(parsed, dict):
-            return [parsed]
-        if isinstance(parsed, list):
-            return parsed
-        return None
+        # Try JSON first (double quotes)
+        parsed = json.loads(ai_response)
     except json.JSONDecodeError:
-        return None
+        try:
+            # Fall back to ast for Python-style dicts (single quotes)
+            import ast
+            parsed = ast.literal_eval(ai_response)
+        except (ValueError, SyntaxError):
+            print(f"Failed to parse AI response: {ai_response}")
+            return None
+
+    if isinstance(parsed, dict):
+        return [parsed]   # wrap single dict in list
+
+    if isinstance(parsed, list):
+        return parsed
+
+    return None
+
 
 
 def start_brain_service():
@@ -60,9 +64,9 @@ def start_brain_service():
             base64_img = screenshot.take_screenshot()
 
             ai_response = ai_client.ask_nemotron_two(user_goal=goal, text_input=None, image_input=base64_img)
-            # print(f"AI Response: {ai_response}")
+            print(f"AI Response: {ai_response}")
 
-            json_data_list = normalize_ai_response(ai_response)
+            json_data_list = normalize_ai_response(ai_response.strip())
             print(f"Final Output nemo2: {json_data_list}")
             
             if not json_data_list or not isinstance(json_data_list, list):

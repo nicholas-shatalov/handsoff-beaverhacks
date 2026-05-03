@@ -64,12 +64,15 @@ If you are unable to perform a task, describe the reason why.
 1. You must output ONLY valid JSON.
 2. No markdown formatting, no backticks, no conversational text.
 3. If the user goal is NOT achievable, set the action to "error".
-4. You MUST use this following schema:
+4. Always respond with a JSON packet of an action or error
+5. You MUST use this following schema in outputs:
 [
     {"name": "open_url", "arguments": {"url": "https://youtube.com"}},
     {"name": "type_text", "arguments": {"text": "cat videos"}},
     {"name": "error", "arguments": {"reason": "explanation of why goal is not achievable"}}
 ]
+Make sure to include every task in your output and make NO mistakes
+Always execute and include all tasks, do not wait for other tasks to complete first
 """
 
 # Cached Prompts

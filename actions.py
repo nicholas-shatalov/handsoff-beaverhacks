@@ -6,6 +6,7 @@ import pygetwindow as gw
 import time
 import os
 import screenshot
+import pyperclip
 
 IPC_FOLDER = "ipc_data_two"
 TOOLS_JSON_FILE = os.path.join(IPC_FOLDER, "tools.json")
@@ -37,9 +38,7 @@ def search_browser(searchterm: str):
     open_url("https://www.google.com/search?q=" + searchterm)
 
 def click(x: int, y: int):
-    real_x = int(x * screenshot.get_scale_x())
-    real_y = int(y * screenshot.get_scale_y())
-    pyautogui.click(real_x, real_y)
+    pyautogui.click(x, y)
 
 def scroll(direction: str, amount: int = 3):
     try:
@@ -66,7 +65,7 @@ def zoom(direction: str, amount: int = 3):
         return False
 
 def type_text(text: str):
-    pyautogui.typewrite(text, interval=0.05)
+    pyautogui.typewrite(text, interval=0.1)
 
 def press_key(key: str):
     pyautogui.press(key)
@@ -99,7 +98,7 @@ actions = {
     "click": click,
     "scroll": scroll,
     "zoom": zoom,
-    "type_test": type_text,
+    "type_text": type_text,
     "press_key": press_key,
     "take_screenshot": take_screenshot,
     "focus_window": focus_window,
@@ -120,6 +119,7 @@ def execute_tasks():
             print("Succesfully found trigger and action file")
             with open(ACTION_FILE) as f:
                 for line in f:
+                    time.sleep(0.3)
                     line = line.strip()
                     if not line:
                         continue

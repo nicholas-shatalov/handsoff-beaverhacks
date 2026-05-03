@@ -87,7 +87,7 @@ class MicrophoneCapture:
         )
         self._stream.start_stream()
         print(
-            f"🎤 Mic open — {self.chunk_ms}ms chunks "
+            f"Mic open — {self.chunk_ms}ms chunks "
             f"({self.chunk_frames} frames). Ctrl+C to quit.\n"
         )
 
@@ -114,7 +114,7 @@ class MicrophoneCapture:
             self._stream.close()
         self._pa.terminate()
         self._queue.put(None)
-        print("\n🛑 Mic stopped.")
+        print("\nMic stopped.")
 
 
 # ---------------------------------------------------------------------------
@@ -126,11 +126,11 @@ def save_goal(text: str):
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         f.write(text.strip() + "\n")
-    print(f'\n💾 Saved to {OUTPUT_FILE}:\n   "{text.strip()}"')
+    print(f'\nSaved to {OUTPUT_FILE}:\n   "{text.strip()}"')
 
     trigger_path = os.path.join(OUTPUT_DIR, "trigger1.txt")
     open(trigger_path, 'a').close() 
-    print(f"🔔 Created trigger file at {trigger_path}")
+    print(f"Created trigger file at {trigger_path}")
     # ------------------------------------------
 
     print(f'\n💤 Waiting for wake word: "{WAKE_WORD}"\n')
@@ -169,7 +169,7 @@ def run_streaming(api_key: str, mic: MicrophoneCapture):
         audio_chunks=mic,
         streaming_config=config,
     )
-    print(f'✅ Connected.\n\n💤 Waiting for wake word: "{WAKE_WORD}"\n')
+    print(f'Connected.\n\n💤 Waiting for wake word: "{WAKE_WORD}"\n')
 
     # State
     active         = False
@@ -184,7 +184,7 @@ def run_streaming(api_key: str, mic: MicrophoneCapture):
         active = False
         full_text = " ".join(captured_parts).strip()
         captured_parts = []
-        print(f"\r\033[K⏱  3s silence — ending capture.")
+        print(f"\r\033[K3s silence — ending capture.")
         if full_text:
             save_goal(full_text)
         else:
@@ -221,18 +221,18 @@ def run_streaming(api_key: str, mic: MicrophoneCapture):
                         remainder = transcript[idx + len(WAKE_WORD):].strip(" ,.!?")
                         if remainder:
                             captured_parts.append(remainder)
-                        print(f"\r\033[K🟢 Jarvis activated! Listening…\n")
+                        print(f"\r\033[KJarvis activated! Listening…\n")
                         reset_silence_timer()
 
                 else:
                     # --- ACTIVE: show live text, accumulate finals only ---
                     if is_final:
                         captured_parts.append(transcript.strip())
-                        print(f"\r\033[K✅ {transcript}")   # confirmed line
+                        print(f"\r\033[K{transcript}")   # confirmed line
                         reset_silence_timer()
                     else:
                         # Live interim — shown in terminal, NOT saved
-                        print(f"\r\033[K📝 {transcript}", end="", flush=True)
+                        print(f"\r\033[K{transcript}", end="", flush=True)
 
     except KeyboardInterrupt:
         # Save whatever was captured if interrupted mid-session
@@ -257,8 +257,8 @@ def main():
 Say "{WAKE_WORD}" to activate, then speak your goal.
 After {SILENCE_TIMEOUT:.0f} seconds of silence the transcript is saved.
 
-Live 📝 lines are shown in the terminal but NOT written to the file.
-Only confirmed ✅ final lines are saved.
+Live lines are shown in the terminal but NOT written to the file.
+Only confirmed final lines are saved.
 
 Chunk size tradeoffs:
   80ms   — Lowest latency
