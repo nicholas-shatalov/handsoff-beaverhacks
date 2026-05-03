@@ -101,6 +101,14 @@ def normalize_ai_response(ai_response):
     return cleaned
 
 
+def create_trigger_for_two():
+    """Create a trigger file in ipc_data_two to signal brain_service_two that processing is complete."""
+    trigger_path = os.path.join("ipc_data_two", "trigger.txt")
+    with open(trigger_path, "w") as f:
+        f.write("done")
+    print("Created trigger for brain_service_two")
+
+
 def start_brain_service():
     print("Brain Service Started. Watching for triggers in the ipc_data_one/ folder...")
     
@@ -134,6 +142,9 @@ def start_brain_service():
                 with open(USER_GOAL_FILE, "w") as f:
                     f.write(output)
                 print(f"Saved user_goal.txt")
+                
+                # Signal brain_service_two
+                create_trigger_for_two()
                     
             except Exception as e:
                 print(f"Error processing frame: {e}")
