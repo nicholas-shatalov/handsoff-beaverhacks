@@ -25,19 +25,20 @@ def build_contents(user_goal, text_input, image_input):
 
     if image_input is not None:
         contents_list.append({"type": "image_url", "image_url": {"url": f"data:image/png;base64,{image_input}"}})
+    return contents_list
 
 def run_nemotron(client, cached_message, user_goal, text_input, image_input):
     
     contents = build_contents(user_goal, text_input, image_input)
 
-    dymanic_message = {
+    dynamic_message = {
         "role": "user",
         "content": contents
     }
     
     completion = client.chat.completions.create(
       model="nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
-      messages=[*cached_message, dymanic_message],
+      messages=[*cached_message, dynamic_message],
       temperature=0.1, 
       top_p=0.95,
       max_tokens=1024, 

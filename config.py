@@ -43,8 +43,8 @@ def build_tools_prompt(tools_path: str) -> str:
 
     return prompt
 
-IPC_FOLDER = "ipc_data_one"
-TOOLS_FILE = os.path.join("tools.json")
+IPC_FOLDER = "ipc_data_two"
+TOOLS_FILE = os.path.join(IPC_FOLDER, "tools.json")
 JSON_PROMPT = build_tools_prompt(TOOLS_FILE)
 
 SYSTEM_PROMPT_2 = """
@@ -58,7 +58,7 @@ CRITICAL INSTRUCTIONS:
 1. You must output ONLY valid JSON.
 2. No markdown formatting, no backticks, no conversational text.
 3. If the user goal is NOT achievable, set the action to "error".
-4. Use the following schema:
+4. You MUST use this following schema with NO additional fields:
 [
     {"name": "open_url", "arguments": {"url": "https://youtube.com"}},
     {"name": "type_text", "arguments": {"text": "cat videos"}},
