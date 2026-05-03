@@ -55,7 +55,7 @@ def run_nemotron(client, cached_message, user_goal, text_input, image_input, jso
         reasoning = getattr(completion.choices[0].message, "reasoning_content", None)
     if reasoning:
         print(f"\nInternal Logic:\n{reasoning}\n")
-
+    
     if not completion.choices or len(completion.choices) == 0:
         return None
 
