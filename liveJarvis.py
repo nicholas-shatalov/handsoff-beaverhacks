@@ -20,6 +20,7 @@ import os
 import queue
 import sys
 import threading
+from dotenv import load_dotenv
 
 # Enable ANSI escape codes on Windows PowerShell
 if sys.platform == "win32":
@@ -34,10 +35,9 @@ import riva.client
 # Configuration
 # ---------------------------------------------------------------------------
 
-NIM_API_KEY = os.environ.get(
-    "NVIDIA_API_KEY",
-    "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",
-)
+load_dotenv()
+
+NIM_API_KEY = os.environ["NVIDIA_API_KEY"]
 NIM_GRPC_ENDPOINT    = "grpc.nvcf.nvidia.com:443"
 NEMOTRON_FUNCTION_ID = "1598d209-5e27-4d3c-8079-4751568b1081"
 
@@ -47,7 +47,7 @@ VALID_CHUNK_MS  = [80, 160, 560, 1120]
 
 WAKE_WORD       = "jarvis"
 SILENCE_TIMEOUT = 1.0
-OUTPUT_DIR      = "../ipc_data_one"
+OUTPUT_DIR      = "ipc_data_one"
 OUTPUT_FILE     = os.path.join(OUTPUT_DIR, "transcript.txt")
 
 
@@ -239,7 +239,7 @@ def run_streaming(api_key: str, mic: MicrophoneCapture):
         if active and captured_parts:
             save_goal(" ".join(captured_parts))
     except Exception as e:
-        print(f"\n❌ Error: {e}")
+        print(f"\nError: {e}")
         raise
 
 
