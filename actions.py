@@ -111,6 +111,7 @@ def execute_tasks():
     print("Executing tasks started... checking for trigger")
     if os.path.exists(TRIGGER_FILE) and os.path.exists(ACTION_FILE):
         try:
+            print("Succesfully found trigger and action file")
             with open(ACTION_FILE) as f:
                 actions = json.load(f)
             for action in actions:
