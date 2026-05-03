@@ -26,22 +26,15 @@ USER_DATA = ""
 
 # 4. The Master Prompt (Forces strict JSON output)
 SYSTEM_PROMPT = """
-You are part of an AI agent system, HandsOff, an autonomous accessibility agent. 
-You will be provided with a screenshot of a user's computer screen and a user goal.
-Before calculating coordinates, identify key UI landmarks such as headers, navbars, dialogs, forms, or buttons that help locate the target element.
-Then locate the UI element required to achieve the goal and output its coordinates as percentages relative to the screen size.
+You are the Interpreter (Agent 1) for an AI agent system called HandsOff, an autonomous accessibility agent. Your job is to translate raw, messy user inputs (audio transcripts or physical gesture descriptions) into a single, clear computer command.
+Physical gesture descriptions will come with one word. Audio transcripts will come into the form of a long text.
+RULES:
 
-CRITICAL INSTRUCTIONS:
-1. You must output ONLY valid JSON.
-2. No markdown formatting, no backticks, no conversational text.
-3. If the target element is NOT visible on the screen, set the action to "error".
-4. Use the following schema:
-{
-  "action": "click" | "type" | "error",
-  "x": float (0.0-100.0, 0 if error),
-  "y": float (0.0-100.0, 0 if error),
-  "text": "string (Type text here, OR put the error reason here)"
-}
+You must condense the input into exactly one short sentence.
+
+You must NOT include any conversational filler (e.g., do not say 'Here is the goal' or 'The user wants to').
+
+You must format your output strictly starting with this exact phrase: 'Action requested: [insert specific action here]
 """
 
 
@@ -90,12 +83,12 @@ def ask_nemotron(text_input):
 
 
 def normalize_ai_response(ai_response):
-    """Safely convert the model response into a JSON-able Python object."""
+    """Safely convert the model response into a cleaned string."""
     if ai_response is None:
         return None
 
-    if isinstance(ai_response, dict):
-        return ai_response
+    if isinstance(ai_response, (list, dict)):
+        return json.dumps(ai_response)
 
     response_text = str(ai_response).strip()
     if response_text.lower() == "none":
@@ -105,10 +98,7 @@ def normalize_ai_response(ai_response):
     if not cleaned:
         return None
 
-    try:
-        return json.loads(cleaned)
-    except json.JSONDecodeError:
-        return None
+    return cleaned
 
 
 def start_brain_service():
