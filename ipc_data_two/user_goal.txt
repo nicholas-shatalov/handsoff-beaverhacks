@@ -1,1 +1,1 @@
-open Gmail, click compose, click email body, write "how I'm late for work"
+open Gmail
