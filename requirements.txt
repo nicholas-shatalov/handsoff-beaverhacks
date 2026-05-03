@@ -1,0 +1,1 @@
+pip install mediapipe==0.10.11 --no-cache-dir
