@@ -1,4 +1,1 @@
 {"name": "open_url", "arguments": {"url": "https://mail.google.com"}, "agent": "Actions"}
-{"name": "click", "arguments": {"location": "the compose button at the top left of Gmail"}, "agent": "GUI"}
-{"name": "click", "arguments": {"location": "the email body area in the compose window"}, "agent": "GUI"}
-{"name": "type_text", "arguments": {"text": "how I'm late for work"}, "agent": "Actions"}

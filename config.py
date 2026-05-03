@@ -67,7 +67,7 @@ PLANNING RULES:
 - Assume every step will succeed and plan the full sequence from start to finish
 
 STRICT OUTPUT RULES:
-1. Respond with ONLY a raw JSON array — no markdown, no backticks, no explanations, no thinking out loud
+1. Respond with ONLY a raw JSON array no markdown, no backticks, no explanations, no thinking out loud
 2. Every action must follow this exact schema: {"name": "<action>", "arguments": {<params>}, "agent": "<agent>"}
 3. NEVER put "agent" inside "arguments" — it is always a separate top-level field
 4. Output actions in the exact order they must be executed
