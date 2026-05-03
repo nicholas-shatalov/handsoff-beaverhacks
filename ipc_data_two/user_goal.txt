@@ -1,1 +1,1 @@
-Action requested: Open Youtube.
+Action requested: open

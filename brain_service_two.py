@@ -49,7 +49,6 @@ def build_tools_prompt(tools_path: str) -> str:
     return prompt
 
 JSON_PROMPT = build_tools_prompt(TOOLS_FILE)
-USER_GOAL = ""
 
 SYSTEM_PROMPT = """
 You are HandsOff, an autonomous accessibility agent that is supposed to enact computer actions on behalf of the user. 
@@ -81,7 +80,7 @@ def encode_image(image_path):
     with open(image_path, "rb") as image_file:
         return base64.b64encode(image_file.read()).decode('utf-8')
 
-def ask_nemotron(base64_image):
+def ask_nemotron(base64_image, goal):
     print("Nemotron Two Thinking")
     
     completion = client.chat.completions.create(
@@ -94,7 +93,7 @@ def ask_nemotron(base64_image):
           {
               "role": "user",
               "content": [
-                  {"type": "text", "text": f"User Goal: {USER_GOAL}"},
+                  {"type": "text", "text": f"User Goal: {goal}"},
                   {"type": "image_url", "image_url": {"url": f"data:image/png;base64,{base64_image}"}}
               ]
           }
@@ -125,7 +124,10 @@ def normalize_ai_response(ai_response):
         return None
 
     if isinstance(ai_response, dict):
-        return ai_response
+        return [ai_response]  # wrap in list for consistency
+    
+    if isinstance(ai_response, list):
+        return ai_response  # already a list, return as is
 
     response_text = str(ai_response).strip()
     if response_text.lower() == "none":
@@ -136,7 +138,13 @@ def normalize_ai_response(ai_response):
         return None
 
     try:
-        return json.loads(cleaned)
+        parsed = json.loads(cleaned)
+        # handle both single action {} and multiple actions [{}]
+        if isinstance(parsed, dict):
+            return [parsed]
+        if isinstance(parsed, list):
+            return parsed
+        return None
     except json.JSONDecodeError:
         return None
 
@@ -147,13 +155,17 @@ def start_brain_service():
     # Check if Member 2 has dropped the trigger file AND the screenshot
     if os.path.exists(TRIGGER_FILE) and os.path.exists(SCREENSHOT_FILE) and os.path.exists(USER_GOAL_FILE):
         try:
-            USER_GOAL = read_user_goal()
+            goal = read_user_goal()
             base64_img = encode_image(SCREENSHOT_FILE)
-            ai_response = ask_nemotron(base64_img)
+            ai_response = ask_nemotron(base64_img, goal)
+            print("AI Response: ")
+            print(ai_response)
             
-            json_data = normalize_ai_response(ai_response)
+            json_data_list = normalize_ai_response(ai_response)
+            print("FILTERED AI OUTPUT")
+            print(json_data_list)
             # If error occurs, save error data in action file
-            if not json_data or not isinstance(json_data, dict):
+            if not json_data_list or not isinstance(json_data_list, list):
                 error_payload = {
                     "name": "error", 
                     "arguments": {"reason": "explanation of why goal is not achievable"}
@@ -163,14 +175,14 @@ def start_brain_service():
                 print("Error: Invalid or missing AI response; saved fallback error action")
                 return
 
-            print(f"Final Decision: {json.dumps(json_data)}")
+            print(f"Final Decision 2: {json.dumps(json_data_list[0])}")
             
             # Save action file
             with open(ACTION_FILE, "w") as f:
-                json.dump(json_data, f)
+                json.dump(json_data_list[0], f)
             print("Saved action.json for execution")
             
-            with open(ACTION_TRIGGER, 'w') as f:
+            with open(ACTION_TRIGGER, "w") as f:
                 f.write("")
             print("Wrote trigger for action tasks")
                 

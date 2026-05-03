@@ -106,19 +106,25 @@ def execute_action(tool_name, tool_input):
     if function:
         # Unpack dictionary kwargs
         return function(**tool_input)
-    
+
 def execute_tasks():
     print("Executing tasks started... checking for trigger")
     if os.path.exists(TRIGGER_FILE) and os.path.exists(ACTION_FILE):
         try:
             print("Succesfully found trigger and action file")
             with open(ACTION_FILE) as f:
-                actions = json.load(f)
-            for action in actions:
-                execute_action(action['name'], action['argument'])
-                print(f"Action: {action['name']} completed")
+                for line in f:
+                    line = line.strip()
+                    if not line:
+                        continue
+
+                    action = json.loads(line)
+                    execute_action(action['name'], action['arguments'])
+                    print(f"Action: {action['name']} completed")
         except Exception as e:
             print("Actions failed")
         finally:
             os.remove(TRIGGER_FILE)
                 
+if __name__ == "__main__":
+    execute_tasks()
