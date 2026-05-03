@@ -15,14 +15,17 @@ client = OpenAI(
 )
 
 # 3. Define the IPC Inter-Process Communication paths
-IPC_FOLDER = "ipc_data"
-TRIGGER_FILE = os.path.join(IPC_FOLDER, "trigger.txt")
-IMAGE_FILE = os.path.join(IPC_FOLDER, "current_screen.png")
-ACTION_FILE = os.path.join(IPC_FOLDER, "action.json")
+IPC_FOLDER = "ipc_data_one"
+IPC_FOLDER_TWO = "ipc_data_two"
+TRIGGER_FILE_ONE = os.path.join(IPC_FOLDER, "trigger1.txt")
+TRIGGER_FILE_TWO = os.path.join(IPC_FOLDER, "trigger2.txt")
+TRANSCRIPT_FILE = os.path.join(IPC_FOLDER, "transcript.txt")
+KEYWORD_FILE = os.path.join(IPC_FOLDER, "keyword.txt")
+USER_GOAL_FILE = os.path.join(IPC_FOLDER_TWO, "user_goal.txt")
 
 # 4. The Master Prompt (Forces strict JSON output)
 SYSTEM_PROMPT = """
-You are OmniAccess, an autonomous accessibility agent. 
+You are part of an AI agent system, HandsOff, an autonomous accessibility agent. 
 You will be provided with a screenshot of a user's computer screen and a user goal.
 Before calculating coordinates, identify key UI landmarks such as headers, navbars, dialogs, forms, or buttons that help locate the target element.
 Then locate the UI element required to achieve the goal and output its coordinates as percentages relative to the screen size.
@@ -41,16 +44,11 @@ CRITICAL INSTRUCTIONS:
 """
 
 # Let's test it on a button actually on your screen!
-USER_GOAL = "Find the 'Google Search' box in the middle of the screen and click it."
-
-def encode_image(image_path):
-    """Converts the screenshot into a format the AI can read."""
-    with open(image_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode('utf-8')
+USER_GOAL = ""
 
 def ask_nemotron(base64_image):
     """Sends the image and prompt to the Nemotron Omni model."""
-    print("🧠 Thinking...")
+    print("Brain Thinking...")
     
     completion = client.chat.completions.create(
       model="nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
@@ -110,8 +108,7 @@ def normalize_ai_response(ai_response):
 
 
 def start_brain_service():
-    """The infinite loop that watches the folder for new screenshots."""
-    print("🧠 Brain Service Started. Watching for triggers in the ipc_data/ folder...")
+    print("Brain Service Started. Watching for triggers in the ipc_data_one/ folder...")
     
     while True:
         # Check if Member 2 has dropped the trigger file AND the screenshot
