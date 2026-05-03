@@ -18,6 +18,7 @@ TOOLS_FILE = os.path.join(IPC_FOLDER, "tools.json")
 SCREENSHOT_FILE = os.path.join(IPC_FOLDER, "current_screen.jpg")
 USER_GOAL_FILE = os.path.join(IPC_FOLDER, "user_goal.txt")
 ACTION_FILE = os.path.join(IPC_FOLDER, "action.json")
+ACTION_TRIGGER = os.path.join(IPC_FOLDER, "actiontrigger.txt")
 
 def build_tools_prompt(tools_path: str) -> str:
     with open(tools_path) as f:
@@ -168,13 +169,18 @@ def start_brain_service():
                 # Save action file
                 with open(ACTION_FILE, "w") as f:
                     json.dump(json_data, f)
-                print(f"Saved action.json for execution")
+                print("Saved action.json for execution")
+                
+                with open(ACTION_TRIGGER, 'w') as f:
+                    f.write("")
+                print("Wrote trigger for action tasks")
                     
             except Exception as e:
                 print(f"Error processing data: {e}")
             finally:
                 # Delete the trigger file so we don't process it twice
                 os.remove(TRIGGER_FILE)
+                break
                 
         # Pause briefly to prevent maxing out the CPU
         time.sleep(0.2)
