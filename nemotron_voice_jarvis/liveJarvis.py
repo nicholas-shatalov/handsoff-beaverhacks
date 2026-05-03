@@ -2,7 +2,7 @@
 stream_transcribe.py — Wake-word activated transcription via NVIDIA NIM (gRPC)
 
 Wake word : "jarvis"
-End       : 3 seconds of silence after activation
+End       : 1 seconds of silence after activation
 Display   : live interim results shown in terminal while listening
 Output    : ../ipc_data/user_goal.txt  (only final confirmed text saved)
 
@@ -48,7 +48,7 @@ VALID_CHUNK_MS  = [80, 160, 560, 1120]
 WAKE_WORD       = "jarvis"
 SILENCE_TIMEOUT = 1.0
 OUTPUT_DIR      = "../ipc_data"
-OUTPUT_FILE     = os.path.join(OUTPUT_DIR, "user_goal.txt")
+OUTPUT_FILE     = os.path.join(OUTPUT_DIR, "transcript.txt")
 
 
 # ---------------------------------------------------------------------------
@@ -127,6 +127,13 @@ def save_goal(text: str):
     with open(OUTPUT_FILE, "w", encoding="utf-8") as f:
         f.write(text.strip() + "\n")
     print(f'\n💾 Saved to {OUTPUT_FILE}:\n   "{text.strip()}"')
+
+    trigger_path = os.path.join(OUTPUT_DIR, "trigger1.txt")
+    open(trigger_path, 'a').close() 
+    print(f"🔔 Created trigger file at {trigger_path}")
+    # ------------------------------------------
+
+    print(f'\n💤 Waiting for wake word: "{WAKE_WORD}"\n')
 
 
 # ---------------------------------------------------------------------------
