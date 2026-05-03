@@ -26,7 +26,7 @@ class Api:
         print("Python: Voice Control Deactivated")
 
 
-def jarvis_loop(api):
+def nemo_loop(api):
     """The background logic loop"""
     while True:
         if api.active:
@@ -38,7 +38,6 @@ def jarvis_loop(api):
                 json_out = None
 
                 if task.get('agent') == "GUI":
-                    time.sleep(5)
                     json_out = brain_service_gui.start_brain_service(task)
                 elif task.get('agent') == "Writing":
                     json_out = brain_service_writing.start_brain_service(task)
@@ -48,6 +47,7 @@ def jarvis_loop(api):
                     print("An error in agent assignment occured")
                     break
                 actions.execute_action(json_out['name'], json_out['arguments'])
+                time.sleep(2.5)
 
         else:
             time.sleep(0.1)
@@ -57,9 +57,9 @@ if __name__ == "__main__":
     api = Api()
 
     # Start the Jarvis logic in a background thread
-    threading.Thread(target=jarvis_loop, args=(api,), daemon=True).start()
+    threading.Thread(target=nemo_loop, args=(api,), daemon=True).start()
 
     # Load your HTML file
     index_path = Path(__file__).resolve().parent / 'my_app' / 'index.html'
-    window = webview.create_window('Ok Jarvis', index_path.as_uri(), js_api=api)
+    window = webview.create_window('Ok Nemo', index_path.as_uri(), js_api=api)
     webview.start()

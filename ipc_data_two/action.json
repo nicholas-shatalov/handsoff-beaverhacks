@@ -1,2 +1,1 @@
-{"name": "open_url", "arguments": {"url": "https://mail.google.com"}, "agent": "Actions"}
-{"name": "click", "arguments": {"location": "the compose button"}, "agent": "GUI"}
+{"name": "error", "arguments": {"reason": "explanation of why goal is not achievable"}}

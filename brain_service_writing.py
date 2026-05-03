@@ -13,7 +13,7 @@ def normalize_ai_response(response):
 def start_brain_service(json_packet):
     print("Writing brain service starting...")
 
-    ai_response = ai_client.ask_nemo_gui(json_packet)
+    ai_response = ai_client.ask_nemo_writing(json_packet)
     print(f"AI Response: {ai_response}")
 
     string_response = normalize_ai_response(ai_response)

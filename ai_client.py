@@ -38,4 +38,4 @@ def ask_nemo_gui(location, image_b64):
     return processor.run_nemotron_gui(nemo_gui, config.CACHED_MESSAGE_3, location, image_b64)
 
 def ask_nemo_writing(json_packet):
-    return processor.run_nemotron_gui(nemo_writing, config.CACHED_MESSAGE_4, json_packet)
+    return processor.run_nemotron_writing(nemo_writing, config.CACHED_MESSAGE_4, json_packet)

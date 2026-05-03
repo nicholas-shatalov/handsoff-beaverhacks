@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Jarvis</title>
+  <title>Nemo</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -18,10 +18,10 @@
       0%, 100% { box-shadow: 0 0 0 0 rgba(0,191,125,0.4); }
       50%       { box-shadow: 0 0 0 20px rgba(0,191,125,0); }
     }
-    #jarvisBtn {
+    #nemoBtn {
       transition: filter 0.4s ease, transform 0.3s ease;
     }
-    #jarvisBtn.grayed {
+    #nemoBtn.grayed {
       filter: grayscale(80%) brightness(0.5);
     }
     #hintText, #statusText {
@@ -68,14 +68,14 @@
       </div>
     </div>
 
-    <!-- Centered Jarvis button -->
+    <!-- Centered Nemo button -->
     <div class="flex flex-col items-center justify-center flex-1">
       <p id="tapLabel" class="text-slate-400 text-lg mb-8 tracking-widest uppercase transition-opacity duration-300">Tap to Begin</p>
 
-      <button id="jarvisBtn" onclick="toggleVoice()"
+      <button id="nemoBtn" onclick="toggleVoice()"
         class="pulse-ring rounded-full bg-gradient-to-br from-[#00BF7D] to-[#5928ED] p-1 focus:outline-none">
         <div class="bg-slate-800 rounded-full px-20 py-10 flex items-center justify-center hover:bg-slate-700 transition-colors duration-200">
-          <span class="text-white font-bold text-6xl tracking-tight">Jarvis</span>
+          <span class="text-white font-bold text-6xl tracking-tight">Nemo</span>
         </div>
       </button>
 
@@ -97,7 +97,8 @@
     function toggleVoice() {
       voiceMode = !voiceMode;
 
-      const btn = document.getElementById('jarvisBtn');
+      const btn = document.getElementById('nemoBtn');
+      
       const statusText = document.getElementById('statusText');
       const hintText = document.getElementById('hintText');
       const tapLabel = document.getElementById('tapLabel');

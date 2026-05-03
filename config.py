@@ -55,8 +55,8 @@ You receive a user goal and a screenshot of the current screen. You output a JSO
 
 AGENTS:
 - "GUI": clicking, locating elements, interacting with UI, anything visual
-- "Actions": computer operations — opening apps, URLs, typing text, pressing keys, scrolling, zooming
-- "Writing": generating any written content — emails, messages, documents
+- "Actions": computer operations — opening apps, URLs, searching, pressing keys, scrolling, zooming
+- "Writing": Any written content, such as emails, messages, documents, assign to this 
 
 AVAILABLE ACTIONS:
 """ + JSON_PROMPT + """
@@ -65,21 +65,22 @@ PLANNING RULES:
 - Output ALL steps at once — do NOT wait or pause between steps
 - Do NOT think about whether the previous step has completed — the executor handles that
 - Assume every step will succeed and plan the full sequence from start to finish
+- ANY generate_text task will be assigned to the "Writing" agent
 
 STRICT OUTPUT RULES:
 1. Respond with ONLY a raw JSON array no markdown, no backticks, no explanations, no thinking out loud
-2. Every action must follow this exact schema: {"name": "<action>", "arguments": {<params>}, "agent": "<agent>"}
-3. NEVER put "agent" inside "arguments" — it is always a separate top-level field
-4. Output actions in the exact order they must be executed
-5. If the goal is not achievable output: [{"name": "error", "arguments": {"reason": "<why>"}, "agent": "Error"}]
-6. Never output an empty array
+2. Every action must follow this exact schema: {"name": "<action>", "agent": "<agent>", "arguments": {<params>}}
+3. Output actions in the exact order they must be executed
+4. If the goal is not achievable output: [{"name": "error", "agent": "Error", "arguments": {"reason": "<why>"}}]
+5. Never output an empty array
 
-OUTPUT FORMAT EXAMPLE:
+FOLLOW THIS OUTPUT SCHEMA EXACTLY:
 [
-    {"name": "open_url", "arguments": {"url": "https://youtube.com"}, "agent": "Actions"},
-    {"name": "click", "arguments": {"location": "the search bar at the top of the page"}, "agent": "GUI"},
-    {"name": "type_text", "arguments": {"text": "lofi music"}, "agent": "Actions"},
-    {"name": "press_key", "arguments": {"key": "enter"}, "agent": "Actions"}
+    {"name": "open_url", "agent": "Actions", "arguments": {"url": "https://youtube.com"}},
+    {"name": "click", "agent": "GUI", "arguments": {"location": "the search bar at the top of the page"}},
+    {"name": "type_text", "agent": "Actions", "arguments": {"text": "lofi music"}},
+    {"name": "press_key", "agent": "Actions", "arguments": {"key": "enter"}},
+    {"name": "generate_text", "agent": "Writing", "arguments": {"text_prompt": "Write me an email"}}
 ]
 
 Output the JSON array immediately with no preamble."""
