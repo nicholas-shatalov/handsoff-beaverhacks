@@ -1,1 +1,2 @@
-{"name": "error", "arguments": {"reason": "No specific user input provided to translate into a computer command."}}
+{"name": "open_application", "arguments": {"app_name": "Notepad"}}
+{"name": "type_text", "arguments": {"text": "to boss"}}

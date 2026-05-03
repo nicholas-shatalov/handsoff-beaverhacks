@@ -45,7 +45,7 @@ SAMPLE_RATE     = 16000
 CHANNELS        = 1
 VALID_CHUNK_MS  = [80, 160, 560, 1120]
 
-WAKE_WORD       = "jarvis"
+WAKE_WORD       = "nemo"
 SILENCE_TIMEOUT = 1.0
 OUTPUT_DIR      = "ipc_data_one"
 OUTPUT_FILE     = os.path.join(OUTPUT_DIR, "transcript.txt")

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Jarvis</title>
+  <title>Nemo</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
@@ -18,22 +18,30 @@
       0%, 100% { box-shadow: 0 0 0 0 rgba(0,191,125,0.4); }
       50%       { box-shadow: 0 0 0 20px rgba(0,191,125,0); }
     }
-    #jarvisBtn {
-      transition: filter 0.4s ease, transform 0.3s ease;
+    
+    /* Bouncing Arrow Animation */
+    @keyframes bounceRight {
+      0%, 100% { transform: translateX(0); }
+      50% { transform: translateX(10px); }
     }
-    #jarvisBtn.grayed {
-      filter: grayscale(80%) brightness(0.5);
+    .animate-bounce-right { animation: bounceRight 1s infinite; }
+
+    #nemoBtn { transition: filter 0.4s ease, transform 0.3s ease; }
+    #nemoBtn.grayed { filter: grayscale(80%) brightness(0.5); }
+    
+    /* Sidebar Transition */
+    #captionSidebar {
+      transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+      transform: translateX(100%);
     }
-    #hintText, #statusText {
-      transition: opacity 0.4s ease;
-      position: absolute;
-    }
+    #captionSidebar.open { transform: translateX(0); }
   </style>
 </head>
-<body class="flex items-center justify-center p-10">
-  <div class="w-full max-w-[1200px] h-[calc(100vh-5rem)] bg-slate-800 rounded-3xl p-14 shadow-2xl flex flex-col">
+<body class="flex items-center justify-center p-10 relative overflow-hidden">
+  
+  <div class="w-full max-w-[1200px] h-[calc(100vh-5rem)] bg-slate-800 rounded-3xl p-14 shadow-2xl flex flex-col z-10">
 
-    <!-- Navbar -->
+      <!-- Navbar -->
     <div class="flex justify-between items-center border-b border-slate-600 pb-4">
       <div class="flex items-center gap-3">
         <img src="beaver.png" alt="Beaver logo" class="w-6 h-6 rounded-full" />
@@ -68,27 +76,46 @@
       </div>
     </div>
 
-    <!-- Centered Jarvis button -->
+    <!-- Centered nemo button -->
     <div class="flex flex-col items-center justify-center flex-1">
       <p id="tapLabel" class="text-slate-400 text-lg mb-8 tracking-widest uppercase transition-opacity duration-300">Tap to Begin</p>
 
-      <button id="jarvisBtn" onclick="toggleVoice()"
+      <button id="nemoBtn" onclick="toggleVoice()"
         class="pulse-ring rounded-full bg-gradient-to-br from-[#00BF7D] to-[#5928ED] p-1 focus:outline-none">
         <div class="bg-slate-800 rounded-full px-20 py-10 flex items-center justify-center hover:bg-slate-700 transition-colors duration-200">
-          <span class="text-white font-bold text-6xl tracking-tight">Jarvis</span>
+          <span class="text-white font-bold text-6xl tracking-tight">Nemo</span>
         </div>
       </button>
 
-      <!-- Fixed height container so both labels occupy the same space -->
       <div class="relative mt-8 h-12 flex items-center justify-center w-full">
         <p id="hintText" class="text-slate-500 text-sm">Click to activate voice control</p>
-        <div id="statusText" class="flex flex-col items-center gap-1 opacity-0">
+        <div id="statusText" class="flex flex-col items-center gap-1 opacity-0 absolute">
           <p class="text-[#00BF7D] text-xl font-semibold tracking-wide">✓ Voice Control Active</p>
           <p class="text-slate-500 text-sm">Click again to deactivate</p>
         </div>
       </div>
     </div>
+  </div>
 
+  <!-- Bouncing Arrow (Visible only when active) -->
+  <div id="arrowIndicator" class="fixed right-6 top-1/2 -translate-y-1/2 hidden cursor-pointer z-20 group" onclick="openSidebar()">
+    <div class="flex items-center gap-2">
+        <span class="text-slate-400 text-xs font-bold uppercase tracking-tighter opacity-0 group-hover:opacity-100 transition-opacity">Captions</span>
+        <svg class="w-10 h-10 text-[#00BF7D] animate-bounce-right" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path>
+        </svg>
+    </div>
+  </div>
+
+  <!-- Closed Caption Sidebar -->
+  <div id="captionSidebar" class="fixed top-0 right-0 h-full w-80 bg-slate-900/95 backdrop-blur-xl border-l border-slate-700 p-8 z-30 shadow-2xl">
+    <div class="flex justify-between items-center mb-8">
+        <h3 class="text-white font-bold text-xl">Live Transcript</h3>
+        <button onclick="closeSidebar()" class="text-slate-400 hover:text-white">✕</button>
+    </div>
+    <div id="captionBox" class="text-slate-300 space-y-4 overflow-y-auto h-[80vh] text-lg italic leading-relaxed">
+        <p class="opacity-50 text-sm">Listening for voice...</p>
+    </div>
   </div>
 
   <script>
@@ -97,24 +124,67 @@
     function toggleVoice() {
       voiceMode = !voiceMode;
 
-      const btn = document.getElementById('jarvisBtn');
+      const btn = document.getElementById('nemoBtn');
       const statusText = document.getElementById('statusText');
       const hintText = document.getElementById('hintText');
       const tapLabel = document.getElementById('tapLabel');
+      const arrow = document.getElementById('arrowIndicator');
 
       if (voiceMode) {
         btn.classList.add('grayed');
         hintText.style.opacity = '0';
         statusText.style.opacity = '1';
         tapLabel.style.opacity = '0';
+        arrow.classList.remove('hidden');
         window.pywebview?.api?.set_voice_mode();
       } else {
         btn.classList.remove('grayed');
         hintText.style.opacity = '1';
         statusText.style.opacity = '0';
         tapLabel.style.opacity = '1';
+        arrow.classList.add('hidden');
+        closeSidebar();
       }
     }
+
+    function openSidebar() {
+      document.getElementById('captionSidebar').classList.add('open');
+      document.getElementById('arrowIndicator').classList.add('hidden');
+    }
+
+    function closeSidebar() {
+      document.getElementById('captionSidebar').classList.remove('open');
+      if(voiceMode) document.getElementById('arrowIndicator').classList.remove('hidden');
+    }
+
+    // Call this function from your Python/Backend to update the transcript
+    function updateCaptions(text) {
+    const box = document.getElementById('captionBox');
+    const newText = document.createElement('div');
+    
+    // Style differently if it's "Thinking" vs "User Speech"
+    if (text.startsWith("Nemo Thinking:")) {
+        newText.className = "text-xs text-purple-400 border-l border-purple-500 pl-2 mb-4 italic opacity-80";
+        newText.innerText = text;
+    } else {
+        newText.className = "text-sm text-[#00BF7D] border-l-2 border-[#00BF7D] pl-3 mb-4 font-semibold";
+        newText.innerText = text;
+    }
+    
+    box.prepend(newText); 
+    }
+    
+    // Style differently if it's "Thinking" vs "User Speech"
+    if (text.startsWith("Nemo Thinking:")) {
+        newText.className = "text-xs text-purple-400 border-l border-purple-500 pl-2 mb-4 italic opacity-80";
+        newText.innerText = text;
+    } else {
+        newText.className = "text-sm text-[#00BF7D] border-l-2 border-[#00BF7D] pl-3 mb-4 font-semibold";
+        newText.innerText = text;
+    }
+    
+    box.prepend(newText); 
+
   </script>
 </body>
 </html>
