@@ -21,6 +21,7 @@ import queue
 import sys
 import threading
 
+
 # Enable ANSI escape codes on Windows PowerShell
 if sys.platform == "win32":
     import ctypes

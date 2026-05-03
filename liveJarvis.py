@@ -190,6 +190,8 @@ def run_streaming(api_key: str, mic: MicrophoneCapture):
         else:
             print("   (nothing captured)")
         print(f'\n💤 Waiting for wake word: "{WAKE_WORD}"\n')
+        mic.stop()
+
 
     def reset_silence_timer():
         if silence_timer[0]:
