@@ -1,1 +1,1 @@
-open Gmail
+open notepad, write to boss

@@ -7,7 +7,7 @@ import screenshot
 IPC_FOLDER = "ipc_data_two"
 TRIGGER_FILE = os.path.join(IPC_FOLDER, "trigger.txt")
 TOOLS_FILE = os.path.join(IPC_FOLDER, "tools.json")
-SCREENSHOT_FILE = os.path.join(IPC_FOLDER, "current_screen.png")
+SCREENSHOT_FILE = os.path.join(IPC_FOLDER, "current_screen.jpg")
 USER_GOAL_FILE = os.path.join(IPC_FOLDER, "user_goal.txt")
 ACTION_FILE = os.path.join(IPC_FOLDER, "action.json")
 ACTION_TRIGGER = os.path.join(IPC_FOLDER, "actiontrigger.txt")

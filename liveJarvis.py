@@ -45,7 +45,7 @@ SAMPLE_RATE     = 16000
 CHANNELS        = 1
 VALID_CHUNK_MS  = [80, 160, 560, 1120]
 
-WAKE_WORD       = "jarvis"
+WAKE_WORD       = "nemo"
 SILENCE_TIMEOUT = 1.0
 OUTPUT_DIR      = "ipc_data_one"
 OUTPUT_FILE     = os.path.join(OUTPUT_DIR, "transcript.txt")
@@ -133,7 +133,7 @@ def save_goal(text: str):
     print(f"Created trigger file at {trigger_path}")
     # ------------------------------------------
 
-    print(f'\nWaiting for wake word: "{WAKE_WORD}"\n')
+    print(f'\n💤 Waiting for wake word: "{WAKE_WORD}"\n')
 
 
 # ---------------------------------------------------------------------------
@@ -169,7 +169,7 @@ def run_streaming(api_key: str, mic: MicrophoneCapture):
         audio_chunks=mic,
         streaming_config=config,
     )
-    print(f'Connected.\n\nWaiting for wake word: "{WAKE_WORD}"\n')
+    print(f'Connected.\n\n💤 Waiting for wake word: "{WAKE_WORD}"\n')
 
     # State
     active         = False
@@ -189,7 +189,7 @@ def run_streaming(api_key: str, mic: MicrophoneCapture):
             save_goal(full_text)
         else:
             print("   (nothing captured)")
-        print(f'\nWaiting for wake word: "{WAKE_WORD}"\n')
+        print(f'\n💤 Waiting for wake word: "{WAKE_WORD}"\n')
         mic.stop()
 
 

@@ -1,1 +1,2 @@
-{"name": "open_url", "arguments": {"url": "https://mail.google.com"}, "agent": "Actions"}
+{"name": "open_application", "arguments": {"app_name": "Notepad"}}
+{"name": "type_text", "arguments": {"text": "to boss"}}
