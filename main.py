@@ -26,6 +26,7 @@ class Api:
 
 def jarvis_loop(api):
     """The background logic loop"""
+    ai_client.initialize()
     while True:
         if api.active:
             liveJarvis.main()
