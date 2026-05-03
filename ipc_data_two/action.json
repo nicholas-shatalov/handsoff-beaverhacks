@@ -1,1 +1,2 @@
-{"name": "error", "arguments": {"reason": "No specific user input provided to translate into a computer command."}}
+{"name": "click", "arguments": {"location": "the To field in the New Message window"}, "agent": "GUI"}
+{"name": "type_text", "arguments": {"text": "test@example.com"}, "agent": "Actions"}

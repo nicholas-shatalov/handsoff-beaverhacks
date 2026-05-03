@@ -1,1 +1,1 @@
-We need to translate the user's input into a single, clear computer command.
+type

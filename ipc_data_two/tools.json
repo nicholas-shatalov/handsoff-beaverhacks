@@ -1,116 +1,157 @@
 [
     {
-        "type": "function",
+        "type": "task",
         "function": {
             "name": "open_application",
             "description": "Opens a specified app",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "app_name": {"type": "string", "description": "Name of application"}
+                    "app_name": {"type": "string", "description": "Name of application"},
+                    "agent": {
+                        "type": "string",
+                        "description": "The agent assigned to this task",
+                        "enum": ["GUI", "Writing", "Actions"]
+                    }
                 },
-                "required": ["app_name"]
+                "required": ["app_name", "agent"]
             }
-        }
+        }   
     },
     {
-        "type": "function",
+        "type": "task",
         "function": {
             "name": "open_url",
             "description": "Opens a URL in the browser",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "url": {"type": "string", "description": "URL to open"}
+                    "url": {"type": "string", "description": "URL to open"},
+                    "agent": {
+                        "type": "string",
+                        "description": "The agent assigned to this task",
+                        "enum": ["GUI", "Writing", "Actions"]
+                    }
                 },
-                "required": ["url"]
+                "required": ["url", "agent"]
             }
         }
     },
     {
-        "type": "function",
+        "type": "task",
         "function": {
             "name": "search_browser",
             "description": "Opens the browser and searches searchterms",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "searchterm": {"type": "string", "description": "Term to search"}
+                    "searchterm": {"type": "string", "description": "Term to search"},
+                    "agent": {
+                        "type": "string",
+                        "description": "The agent assigned to this task",
+                        "enum": ["GUI", "Writing", "Actions"]
+                    }
                 },
-                "required": ["searchterm"]
+                "required": ["searchterm", "agent"]
             }
         }
     },
     {
-        "type": "function",
+        "type": "task",
         "function": {
             "name": "open_youtube",
             "description": "Opens YouTube",
             "parameters": {
                 "type": "object",
-                "properties": {}
+                "properties": {
+                    "agent": {
+                        "type": "string",
+                        "description": "The agent assigned to this task",
+                        "enum": ["GUI", "Writing", "Actions"]
+                    }
+                },
+                "required": ["agent"]
             }
         }
     },
     {
-        "type": "function",
+        "type": "task",
         "function": {
             "name": "click",
-            "description": "Clicks at a specific position",
+            "description": "Clicks at a location description",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "x": {"type": "integer", "description": "x-coordinate of click location going from 0-1920"},
-                    "y": {"type": "integer", "description": "y-coordinate of click location going from 0-1200"}
+                    "location": {"type": "string", "description": "A description of the location where to click"},
+                    "agent": {
+                        "type": "string",
+                        "description": "The agent assigned to this task",
+                        "enum": ["GUI", "Writing", "Actions"]
+                    }
                 },
-                "required": ["x", "y"]
+                "required": ["location", "agent"]
             }
         }
     },
     {
-        "type": "function",
+        "type": "task",
         "function": {
             "name": "type_text",
             "description": "Types text to the computer",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "text": {"type": "string", "description": "Text being typed"}
+                    "text": {"type": "string", "description": "Text being typed"},
+                    "agent": {
+                        "type": "string",
+                        "description": "The agent assigned to this task",
+                        "enum": ["GUI", "Writing", "Actions"]
+                    }
                 },
-                "required": ["text"]
+                "required": ["text", "agent"]
             }
         }
     },
     {
-        "type": "function",
+        "type": "task",
         "function": {
             "name": "press_key",
             "description": "Inputs a key to the computer",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "key": {"type": "string", "description": "Name of key pressed"}
+                    "key": {"type": "string", "description": "Name of key pressed"},
+                    "agent": {
+                        "type": "string",
+                        "description": "The agent assigned to this task",
+                        "enum": ["GUI", "Writing", "Actions"]
+                    }
                 },
-                "required": ["key"]
+                "required": ["key", "agent"]
             }
         }
     },
     {
-        "type": "function",
+        "type": "task",
         "function": {
             "name": "focus_window",
             "description": "Brings an open window into focus",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "title_substring": {"type": "string", "description": "Name of the window to be focused"}
+                    "title_substring": {"type": "string", "description": "Name of the window to be focused"},
+                    "agent": {
+                        "type": "string",
+                        "description": "The agent assigned to this task",
+                        "enum": ["GUI", "Writing", "Actions"]
+                    }
                 },
-                "required": ["title_substring"]
+                "required": ["title_substring", "agent"]
             }
         }
     },
     {
-        "type": "function",
+        "type": "task",
         "function": {
             "name": "scroll",
             "description": "Scrolls in the application",
@@ -118,14 +159,19 @@
                 "type": "object",
                 "properties": {
                     "direction": {"type": "string", "description": "Has to be up or down"},
-                    "amount": {"type": "int", "description": "The amount of scroll"}
+                    "amount": {"type": "integer", "description": "The amount of scroll"},
+                    "agent": {
+                        "type": "string",
+                        "description": "The agent assigned to this task",
+                        "enum": ["GUI", "Writing", "Actions"]
+                    }
                 },
-                "required": ["direction", "amount"]
+                "required": ["direction", "amount", "agent"]
             }
         }
     },
     {
-        "type": "function",
+        "type": "task",
         "function": {
             "name": "zoom",
             "description": "Zoom in on the application or window",
@@ -133,37 +179,71 @@
                 "type": "object",
                 "properties": {
                     "direction": {"type": "string", "description": "Has to be in or out"},
-                    "amount": {"type": "int", "description": "The amount to zoom"}
+                    "amount": {"type": "integer", "description": "The amount to zoom"},
+                    "agent": {
+                        "type": "string",
+                        "description": "The agent assigned to this task",
+                        "enum": ["GUI", "Writing", "Actions"]
+                    }
                 },
-                "required": ["direction", "amount"]
+                "required": ["direction", "amount", "agent"]
             }
         }
     },
     {
-        "type": "function",
+        "type": "task",
         "function": {
             "name": "take_screenshot",
             "description": "Take a screenshot of the window",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "path": {"type": "string", "description": "Place for screenshot to be stored, if no path is specified store the screenshot in the C drive path"}
+                    "path": {"type": "string", "description": "Place for screenshot to be stored, if no path is specified store the screenshot in the C drive path"},
+                    "agent": {
+                        "type": "string",
+                        "description": "The agent assigned to this task",
+                        "enum": ["GUI", "Writing", "Actions"]
+                    }
                 },
-                "required": ["path"]
+                "required": ["path", "agent"]
             }
         }
     },
     {
-        "type": "function",
+        "type": "task",
         "function": {
             "name": "search_on_youtube",
             "description": "Search for a video on YouTube",
             "parameters": {
                 "type": "object",
                 "properties": {
-                    "query": {"type": "string", "description": "Name of video to search"}
+                    "query": {"type": "string", "description": "Name of video to search"},
+                    "agent": {
+                        "type": "string",
+                        "description": "The agent assigned to this task",
+                        "enum": ["GUI", "Writing", "Actions"]
+                    }
                 },
-                "required": ["query"]
+                "required": ["query", "agent"]
+            }
+        }
+    },
+    {
+        "type": "task",
+        "function": {
+            "name": "generate_text",
+            "description": "Generates text based on the user prompt",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "text_prompt": {"type": "string", "description": "Description of the text the user wants generate"},
+                    "agent": {
+                        "type": "string",
+                        "description": "The agent assigned to this task",
+                        "enum": ["GUI", "Writing", "Actions"]
+                    }
+                },
+                "required": ["text_prompt", "agent"]
             }
         }
     }
