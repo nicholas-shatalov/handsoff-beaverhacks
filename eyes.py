@@ -84,7 +84,7 @@ while cap.isOpened():
 
             # STEP 2: Create the trigger file AFTER the image is saved
             # This ensures the Brain doesn't wake up to an empty image
-            with open('ipc_data_one/trigger.txt', 'w') as f:
+            with open('ipc_data_one/keyword.txt', 'w') as f:
                 f.write(detected_pose)
             
             print(f"Sent {detected_pose} to Brain.")
