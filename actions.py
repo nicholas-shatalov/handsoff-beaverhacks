@@ -38,7 +38,7 @@ def search_browser(searchterm: str):
     open_url("https://www.google.com/search?q=" + searchterm)
 
 def click(x: int, y: int):
-    pyautogui.click(x, y)
+    pyautogui.click(x, y+15)
 
 def scroll(direction: str, amount: int = 3):
     try:
@@ -107,13 +107,17 @@ actions = {
 
 def execute_action(tool_name, tool_input):
     function = actions.get(tool_name)
+
     # Check if function exists
     if function:
+        print(f"Action: {tool_name} completed")
         # Unpack dictionary kwargs
-        return function(**tool_input)
+        args = {k: v for k, v in tool_input.items() if k != "agent"}
+        return function(**args)
 
-def execute_tasks():
-    print("Executing tasks started... checking for trigger")
+def get_tasks():
+    print("Loading tasks from json... checking for trigger")
+    tasks = []
     if os.path.exists(TRIGGER_FILE) and os.path.exists(ACTION_FILE):
         try:
             print("Succesfully found trigger and action file")
@@ -123,15 +127,13 @@ def execute_tasks():
                     line = line.strip()
                     if not line:
                         continue
-
-                    action = json.loads(line)
-                    print(f"Executing action: {action}")
-                    execute_action(action['name'], action['arguments'])
-                    print(f"Action: {action['name']} completed")
+                    task = json.loads(line)
+                    tasks.append(task)
         except Exception as e:
-            print("Actions failed")
+            print("Getting tasks failed")
         finally:
             os.remove(TRIGGER_FILE)
+    return tasks
                 
 if __name__ == "__main__":
-    execute_tasks()
+   get_tasks()

@@ -1,1 +1,1 @@
-{"type": "click", "x": 225, "y": 977}
+{"name": "open_url", "arguments": {"url": "https://mail.google.com"}, "agent": "Actions"}

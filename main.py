@@ -6,6 +6,8 @@ import threading
 import liveJarvis
 import brain_service_one
 import brain_service_two
+import brain_service_writing
+import brain_service_gui
 import actions
 import ai_client
 
@@ -26,13 +28,27 @@ class Api:
 
 def jarvis_loop(api):
     """The background logic loop"""
-    ai_client.initialize()
     while True:
         if api.active:
             liveJarvis.main()
             brain_service_one.start_brain_service()
             brain_service_two.start_brain_service()
-            actions.execute_tasks()
+            tasks = actions.get_tasks()
+            for task in tasks:
+                json_out = None
+
+                if task.get('agent') == "GUI":
+                    time.sleep(5)
+                    json_out = brain_service_gui.start_brain_service(task)
+                elif task.get('agent') == "Writing":
+                    json_out = brain_service_writing.start_brain_service(task)
+                elif task.get('agent') == "Actions":
+                    json_out = task
+                else:
+                    print("An error in agent assignment occured")
+                    break
+                actions.execute_action(json_out['name'], json_out['arguments'])
+
         else:
             time.sleep(0.1)
 
