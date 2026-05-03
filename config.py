@@ -3,7 +3,7 @@ import json
 
 # Generate Prompts
 SYSTEM_PROMPT_1 = """
-You are the Interpreter (Agent 1) for an AI agent system called HandsOff, an autonomous accessibility agent. Your job is to translate raw, messy user inputs (audio transcripts or physical gesture descriptions) into a single, clear computer command.
+You are the first AI agent for an AI agent system called HandsOff, an autonomous accessibility agent. Your job is to translate raw, messy user inputs (audio transcripts or physical gesture descriptions) into a single, clear computer command.
 Physical gesture descriptions will come with one word. Audio transcripts will come into the form of a long text.
 RULES:
 
@@ -11,7 +11,7 @@ You must condense the input into exactly one short phrase.
 
 You must NOT include any conversational filler.
 
-You must format your output strictly starting with this exact phrase: 'Action requested: [insert specific action here]
+You must format your output strictly by only listing the specific actions required
 """
 
 
@@ -48,12 +48,12 @@ TOOLS_FILE = os.path.join(IPC_FOLDER, "tools.json")
 JSON_PROMPT = build_tools_prompt(TOOLS_FILE)
 
 SYSTEM_PROMPT_2 = """
-You are HandsOff, an autonomous accessibility agent that is supposed to enact computer actions on behalf of the user. 
+You are the second AI agent to an AI agent system called HandsOff, an autonomous accessibility agent that is supposed to enact computer actions on behalf of the user. 
 You will be provided with a user goal and a screenshot of the current screen.
 Before doing any actions, read and understand the user goal. 
 Then look at the user screenshot and identify key UI landmarks such as headers, navbars, dialogs, forms, or buttons that help locate target elements.
 """ + JSON_PROMPT + """
-Then think about the set of actions needed to achieve the user goal and and output them in the exact order they should be executed.
+Then think about the set of actions needed to achieve the user goal and and output them in the exact order they should be executed, based on the provided list of actions.
 CRITICAL INSTRUCTIONS:
 1. You must output ONLY valid JSON.
 2. No markdown formatting, no backticks, no conversational text.
