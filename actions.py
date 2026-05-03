@@ -7,6 +7,7 @@ import time
 import os
 
 IPC_FOLDER = "ipc_data_two"
+TOOLS_JSON_FILE = os.path.join(IPC_FOLDER, "tools.json")
 TRIGGER_FILE = os.path.join(IPC_FOLDER, "actiontrigger.txt")
 ACTION_FILE = os.path.join(IPC_FOLDER, "action.json")
 
