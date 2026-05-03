@@ -60,7 +60,7 @@ def run_nemotron_gui(client, cached_message, location, image_b64):
             {
                 "type": "text",
                 "text": 
-                    f"Screenshot resolution: 1920x1200.\n"
+                    f"Screenshot resolution: 1920x1080.\n"
                     f"Find this element: {location}\n"
                     f"Look at the screenshot, identify the element, and output its center coordinates.\n"
                     f"Do NOT second-guess yourself. Make one decision and output it.\n" 
