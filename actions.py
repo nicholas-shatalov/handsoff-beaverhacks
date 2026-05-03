@@ -38,7 +38,7 @@ def search_browser(searchterm: str):
     open_url("https://www.google.com/search?q=" + searchterm)
 
 def click(x: int, y: int):
-    pyautogui.click(x+90, y+90)
+    pyautogui.click(x, y+15)
 
 def scroll(direction: str, amount: int = 3):
     try:
