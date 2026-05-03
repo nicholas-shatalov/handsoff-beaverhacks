@@ -1,1 +1,1 @@
-{"name": "error", "arguments": {"reason": "No available action allows requesting clarification as the provided actions do not support communication or clarification requests."}}
+{"name": "error", "arguments": {"reason": "No specific user input provided to translate into a computer command."}}
