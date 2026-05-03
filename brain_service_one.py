@@ -113,52 +113,49 @@ def create_trigger_for_two():
 def start_brain_service():
     print("Brain Service Started. Watching for triggers in the ipc_data_one/ folder...")
     
-    while True:
-        # Check if Member 2 has dropped the trigger file AND the screenshot
-        if (os.path.exists(TRIGGER_FILE_ONE) and os.path.exists(TRANSCRIPT_FILE)) or \
-           (os.path.exists(TRIGGER_FILE_TWO) and os.path.exists(KEYWORD_FILE)):
-            try:
-                input = ''
-                if os.path.exists(TRANSCRIPT_FILE):
-                    USER_DATA = "Here is a transcript of the user requests for action"
-                    input = read_file(TRANSCRIPT_FILE)
-                elif os.path.exists(KEYWORD_FILE):
-                    USER_DATA = "Here is the keyword that was obtained from the physical gesture"
-                    input = read_file(KEYWORD_FILE)
-                else:
-                    raise Exception
-                ai_response = ask_nemotron(input)
-                
-                output = normalize_ai_response(ai_response)
-                if not output or not isinstance(output, str):
-                    error_payload = "error"
-                    with open(USER_GOAL_FILE, "w") as f:
-                        f.write(error_payload)
-                    print("Error: Invalid or missing AI response; saved fallback error action.")
-                    continue
-
-                print(f"Final Decision: {output}")
-                
-                # Save it for Member 4
+    # Check if Member 2 has dropped the trigger file AND the screenshot
+    if (os.path.exists(TRIGGER_FILE_ONE) and os.path.exists(TRANSCRIPT_FILE)) or \
+        (os.path.exists(TRIGGER_FILE_TWO) and os.path.exists(KEYWORD_FILE)):
+        try:
+            input = ''
+            if os.path.exists(TRANSCRIPT_FILE):
+                USER_DATA = "Here is a transcript of the user requests for action"
+                input = read_file(TRANSCRIPT_FILE)
+            elif os.path.exists(KEYWORD_FILE):
+                USER_DATA = "Here is the keyword that was obtained from the physical gesture"
+                input = read_file(KEYWORD_FILE)
+            else:
+                raise Exception
+            ai_response = ask_nemotron(input)
+            
+            output = normalize_ai_response(ai_response)
+            if not output or not isinstance(output, str):
+                error_payload = "error"
                 with open(USER_GOAL_FILE, "w") as f:
-                    f.write(output)
-                print(f"Saved user_goal.txt")
+                    f.write(error_payload)
+                print("Error: Invalid or missing AI response; saved fallback error action.")
+                return
+
+            print(f"Final Decision: {output}")
+            
+            # Save it for Member 4
+            with open(USER_GOAL_FILE, "w") as f:
+                f.write(output)
+            print(f"Saved user_goal.txt")
+            
+            # Signal brain_service_two
+            create_trigger_for_two()
                 
-                # Signal brain_service_two
-                create_trigger_for_two()
-                    
-            except Exception as e:
-                print(f"Error processing frame: {e}")
-            finally:
-                # Delete the trigger file so we don't process it twice
-                if os.path.exists(TRIGGER_FILE_ONE):
-                    os.remove(TRIGGER_FILE_ONE)
-                if os.path.exists(TRIGGER_FILE_TWO):
-                    os.remove(TRIGGER_FILE_TWO)
-                break
+        except Exception as e:
+            print(f"Error processing frame: {e}")
+        finally:
+            # Delete the trigger file so we don't process it twice
+            if os.path.exists(TRIGGER_FILE_ONE):
+                os.remove(TRIGGER_FILE_ONE)
+            if os.path.exists(TRIGGER_FILE_TWO):
+                os.remove(TRIGGER_FILE_TWO)
                 
-        # Pause briefly to prevent maxing out the CPU
-        time.sleep(0.2)
+
 
 if __name__ == "__main__":
     # If the ipc_data folder doesn't exist yet, create it safely

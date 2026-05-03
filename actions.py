@@ -108,16 +108,15 @@ def execute_action(tool_name, tool_input):
     
 def execute_tasks():
     print("Executing tasks started... checking for trigger")
-    while True:
-        if os.path.exists(TRIGGER_FILE) and os.path.exists(ACTION_FILE):
-            try:
-                with open(ACTION_FILE) as f:
-                    actions = json.load(f)
-                for action in actions:
-                    execute_action(action["name"], action["argument"])
-                    print(f"Action: {action["name"]} completed")
-            except Exception as e:
-                print("Actions failed")
-            finally:
-                os.remove(TRIGGER_FILE)
-                break
+    if os.path.exists(TRIGGER_FILE) and os.path.exists(ACTION_FILE):
+        try:
+            with open(ACTION_FILE) as f:
+                actions = json.load(f)
+            for action in actions:
+                execute_action(action["name"], action["argument"])
+                print(f"Action: {action["name"]} completed")
+        except Exception as e:
+            print("Actions failed")
+        finally:
+            os.remove(TRIGGER_FILE)
+                

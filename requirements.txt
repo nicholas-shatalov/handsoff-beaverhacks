@@ -1,18 +1,15 @@
-<<<<<<< HEAD
 pyautogui 
 pygetwindow
-mediapipe==0.10.11 --no-cache-dir
->>>>>>> c0a97aa54f31e8b634341b7237184f706e6d58cf
-# NVIDIA NIM streaming ASR dependencies
+mediapipe==0.10.11 
 torch>=2.0.0
 soundfile>=0.12.0
 numpy>=1.24.0
 pyaudio>=0.2.13
 websockets>=12.0
-
-pyaudio>=0.2.13
-nvidia-riva-client>=2.0.0
- 
-# For batch transcription with main.py (optional if using NIM API only)
-# nemo-toolkit[asr] must be installed from GitHub, not PyPI:
-# pip install git+https://github.com/NVIDIA/NeMo.git@main#egg=nemo_toolkit[asr
+nvidia-riva-client
+openai
+pywebview
+python-dotenv
+mss
+opencv-python
+matplotlib
