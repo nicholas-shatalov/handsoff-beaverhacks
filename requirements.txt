@@ -1,2 +1,5 @@
+<<<<<<< HEAD
+pyautogui 
+pygetwindow
 mediapipe==0.10.11 --no-cache-dir
-pywebview
+>>>>>>> c0a97aa54f31e8b634341b7237184f706e6d58cf
