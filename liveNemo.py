@@ -1,7 +1,7 @@
 """
 stream_transcribe.py — Wake-word activated transcription via NVIDIA NIM (gRPC)
 
-Wake word : "jarvis"
+Wake word : "nemo"
 End       : 1 seconds of silence after activation
 Display   : live interim results shown in terminal while listening
 Output    : ../ipc_data/user_goal.txt  (only final confirmed text saved)
@@ -45,7 +45,7 @@ SAMPLE_RATE     = 16000
 CHANNELS        = 1
 VALID_CHUNK_MS  = [80, 160, 560, 1120]
 
-WAKE_WORD       = "jarvis"
+WAKE_WORD       = "nemo"
 SILENCE_TIMEOUT = 1.0
 OUTPUT_DIR      = "ipc_data_one"
 OUTPUT_FILE     = os.path.join(OUTPUT_DIR, "transcript.txt")
@@ -221,7 +221,7 @@ def run_streaming(api_key: str, mic: MicrophoneCapture):
                         remainder = transcript[idx + len(WAKE_WORD):].strip(" ,.!?")
                         if remainder:
                             captured_parts.append(remainder)
-                        print(f"\r\033[K🟢 Jarvis activated! Listening…\n")
+                        print(f"\r\033[K🟢 Nemo activated! Listening…\n")
                         reset_silence_timer()
 
                 else:
@@ -251,7 +251,7 @@ def run_streaming(api_key: str, mic: MicrophoneCapture):
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Jarvis wake-word ASR → saves goal to ../ipc_data/user_goal.txt',
+        description='Nemo wake-word ASR → saves goal to ../ipc_data/user_goal.txt',
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=f"""
 Say "{WAKE_WORD}" to activate, then speak your goal.
