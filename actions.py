@@ -119,6 +119,7 @@ def execute_tasks():
                         continue
 
                     action = json.loads(line)
+                    print(f"Executing action: {action}")
                     execute_action(action['name'], action['arguments'])
                     print(f"Action: {action['name']} completed")
         except Exception as e:

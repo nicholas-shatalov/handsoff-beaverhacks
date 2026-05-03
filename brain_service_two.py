@@ -64,7 +64,7 @@ def start_brain_service():
             base64_img = encode_image(SCREENSHOT_FILE)
 
             ai_response = ai_client.ask_nemotron_two(user_goal=goal, text_input=None, image_input=base64_img)
-            print(f"AI Response: {ai_response}")
+            # print(f"AI Response: {ai_response}")
 
             json_data_list = normalize_ai_response(ai_response)
             print(f"Final Output nemo2: {json_data_list}")
@@ -83,6 +83,7 @@ def start_brain_service():
             with open(ACTION_FILE, "w") as f:
                 for json_packet in json_data_list:
                     json.dump(json_packet, f)
+                    f.write("\n")
             print("Saved action.json for execution")
             
             with open(ACTION_TRIGGER, "w") as f:
