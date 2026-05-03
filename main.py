@@ -38,6 +38,7 @@ def nemo_loop(api):
                 json_out = None
 
                 if task.get('agent') == "GUI":
+                    time.sleep(5)
                     json_out = brain_service_gui.start_brain_service(task)
                 elif task.get('agent') == "Writing":
                     json_out = brain_service_writing.start_brain_service(task)
