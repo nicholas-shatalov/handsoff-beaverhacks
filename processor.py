@@ -1,19 +1,5 @@
 from openai import OpenAI
 
-def cache_model(client, cached_message):
-    completion = client.chat.completions.create(
-        model="nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
-        messages=[*cached_message],  # prefix + small dynamic tail
-        temperature=0.1,
-        top_p=0.95,
-        max_tokens=1024,
-        extra_body={
-            "chat_template_kwargs": {"enable_thinking": True},
-            "reasoning_budget": 1024
-        },
-        stream=False
-    )
-
 def build_contents(user_goal, text_input, image_input):
     contents_list = []
     
@@ -42,10 +28,76 @@ def run_nemotron(client, cached_message, user_goal, text_input, image_input, jso
     completion = client.chat.completions.create(
       model="nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
       messages=[*cached_message, dynamic_message],
-      temperature=0.1, 
-      top_p=0.95,
-      max_tokens=1024, 
-      extra_body={"chat_template_kwargs":{"enable_thinking":True},"reasoning_budget":1024},
+      temperature=0, 
+      top_p=1,
+      max_tokens=4096, 
+      extra_body={"chat_template_kwargs":{"enable_thinking":True},"reasoning_budget":16384},
+      stream=False
+    )
+
+    # Print the model's internal reasoning to the terminal (Great for demo!)
+    reasoning = None
+    if completion.choices and len(completion.choices) > 0:
+        reasoning = getattr(completion.choices[0].message, "reasoning_content", None)
+    if reasoning:
+        print(f"\nInternal Logic:\n{reasoning}\n")
+
+    if not completion.choices or len(completion.choices) == 0:
+        return None
+
+    return completion.choices[0].message.content
+
+def run_nemotron_gui(client, cached_message, location, image_b64):
+    dynamic_message = {
+        "role": "user",
+        "content": [
+            {
+                "type": "image_url",
+                "image_url": {"url": f"data:image/png;base64,{image_b64}"}
+            },
+            {
+                "type": "text",
+                "text": 
+                    f"Screenshot resolution: 1920x1080.\n"
+                    f"Find this element: {location}\n"
+                    f"Look at the screenshot, identify the element, and output its center coordinates.\n"
+                    f"Do NOT second-guess yourself. Make one decision and output it.\n" 
+                     "Respond ONLY with valid JSON: {'name': 'click', 'arguments': {'x': <int>, 'y': <int>}}}}"
+            }
+        ]
+    }
+
+    completion = client.chat.completions.create(
+      model="nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+      messages=[*cached_message, dynamic_message],
+      temperature=0, 
+      top_p=1,
+      max_tokens=512, 
+      extra_body={"chat_template_kwargs":{"enable_thinking":True},"reasoning_budget":2048},
+      stream=False
+    )
+
+    # Print the model's internal reasoning to the terminal (Great for demo!)
+    '''reasoning = None
+    if completion.choices and len(completion.choices) > 0:
+        reasoning = getattr(completion.choices[0].message, "reasoning_content", None)
+    if reasoning:
+        print(f"\nInternal Logic:\n{reasoning}\n")'''
+
+    if not completion.choices or len(completion.choices) == 0:
+        return None
+
+    return completion.choices[0].message.content
+
+def run_nemotron_writing(client, cached_message, json_packet):
+    
+    completion = client.chat.completions.create(
+      model="nvidia/nemotron-3-nano-omni-30b-a3b-reasoning",
+      messages=[*cached_message, json_packet],
+      temperature=0.3, 
+      top_p=1,
+      max_tokens=4096, 
+      extra_body={"chat_template_kwargs":{"enable_thinking":True},"reasoning_budget":16384},
       stream=False
     )
 

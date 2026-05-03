@@ -6,7 +6,7 @@ import io
 
 # Define the folder and file name
 folder_path = "ipc_data_one"
-file_name = "current_screen.jpg"
+file_name = "current_screen.png"
 full_path = os.path.join(folder_path, file_name)
 
 scale_x = 0
@@ -25,7 +25,7 @@ def take_screenshot(resize_width=800):
     scale_y = screen_h / resize_height
 
     buffer = io.BytesIO()
-    resized.save(buffer, format="JPEG", quality=85)
+    screenshot.save(buffer, format="PNG", quality=85)
     b64 = base64.b64encode(buffer.getvalue()).decode("utf-8")
     return b64
 

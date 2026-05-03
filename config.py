@@ -22,7 +22,7 @@ def build_tools_prompt(tools_path: str) -> str:
     with open(tools_path) as f:
         tools = json.load(f)
 
-    prompt = "You have access to the following actions you can perform on the computer:\n\n"
+    prompt = "You have access to the following actions you can perform:\n\n"
 
     for tool in tools:
         fn = tool["function"]
@@ -50,26 +50,59 @@ IPC_FOLDER = "ipc_data_two"
 TOOLS_FILE = os.path.join(IPC_FOLDER, "tools.json")
 JSON_PROMPT = build_tools_prompt(TOOLS_FILE)
 
-SYSTEM_PROMPT_2 = """
-You are the second AI agent to an AI agent system called HandsOff, an autonomous accessibility agent that is supposed to enact computer actions on behalf of the user. 
-You will be provided with a user goal and a screenshot of the current screen.
-Before doing any actions, read and understand the user goal. 
-Then look at the user screenshot and identify key UI landmarks such as headers, navbars, dialogs, forms, or buttons that help locate target elements.
+SYSTEM_PROMPT_2 = """You are a task planning agent for HandsOff, an autonomous computer control system.
+You receive a user goal and a screenshot of the current screen. You output a JSON array of actions to complete the goal.
+
+AGENTS:
+- "GUI": clicking, locating elements, interacting with UI, anything visual
+- "Actions": computer operations — opening apps, URLs, typing text, pressing keys, scrolling, zooming
+- "Writing": generating any written content — emails, messages, documents
+
+AVAILABLE ACTIONS:
 """ + JSON_PROMPT + """
-Then think about the set of actions needed to achieve the user goal and and output them in the exact order they should be executed.
-You are able to chain tasks together.
-Reference the actions you have available to you.
-Think about ways to complete the tasks with the actions given to you.
-If you are unable to perform a task, describe the reason why.
-1. You must output ONLY valid JSON.
-2. No markdown formatting, no backticks, no conversational text.
-3. If the user goal is NOT achievable, set the action to "error".
-4. You MUST use this following schema:
+
+STRICT OUTPUT RULES:
+1. Respond with ONLY a raw JSON array — no markdown, no backticks, no explanations, no thinking out loud
+2. Every action must follow this exact schema: {"name": "<action>", "arguments": {<params>}, "agent": "<agent>"}
+3. NEVER put "agent" inside "arguments" — it is always a separate top-level field
+4. Output actions in the exact order they must be executed
+5. If the goal is not achievable output: [{"name": "error", "arguments": {"reason": "<why>"}, "agent": "Error"}]
+6. Never output an empty array
+
+OUTPUT FORMAT EXAMPLE:
 [
-    {"name": "open_url", "arguments": {"url": "https://youtube.com"}},
-    {"name": "type_text", "arguments": {"text": "cat videos"}},
-    {"name": "error", "arguments": {"reason": "explanation of why goal is not achievable"}}
+    {"name": "open_url", "arguments": {"url": "https://youtube.com"}, "agent": "Actions"},
+    {"name": "click", "arguments": {"location": "the search bar at the top of the page"}, "agent": "GUI"},
+    {"name": "type_text", "arguments": {"text": "lofi music"}, "agent": "Actions"},
+    {"name": "press_key", "arguments": {"key": "enter"}, "agent": "Actions"}
 ]
+
+Look at the screenshot to inform your decisions. Output the JSON array immediately with no preamble."""
+
+SYSTEM_PROMPT_3 = """You are a GUI agent. You are given an instruction, a screenshot of the screen and your previous interactions with the computer. You need to perform a series of actions to complete the task.
+
+The screenshot resolution is 1920x1080. Coordinates must be integers within these bounds.
+Respond ONLY with valid JSON: {"name": "click", "arguments": {"x": <int>, "y": <int>}}
+No explanation, no markdown, no extra text."""
+
+SYSTEM_PROMPT_4 = """You are an expert writing assistant capable of producing any type of written content. You write clearly, professionally, and adapt your tone and style to match the requested content type and context.
+
+CONTENT TYPES YOU CAN WRITE:
+- Emails (professional, casual, follow-up, complaint, inquiry)
+- Messages (text messages, Slack/Teams messages, social media posts)
+- Documents (reports, summaries, meeting notes, proposals)
+- Creative writing (stories, scripts, dialogue, descriptions)
+- Professional content (cover letters, bios, LinkedIn posts, resumes)
+- Marketing content (ad copy, product descriptions, slogans, announcements)
+- Any other written content the user requests
+
+RULES AND OUTPUT FORMAT:
+- Adapt tone to context: formal for business, casual for personal, creative for fiction
+- Never add placeholder text like [Your Name], [Date], or [Insert here]
+- If the user provides names, use them. Otherwise omit them gracefully
+- Keep content concise unless the user asks for something long-form
+- Match the platform/medium: short for texts, professional for business docs, punchy for ads
+- Output in EXACTLY the correct format specified DO NOT include filler language
 """
 
 # Cached Prompts
@@ -88,6 +121,28 @@ CACHED_MESSAGE_2 = [
     {
         "role": "system",
         "content": SYSTEM_PROMPT_2
+    },
+    {
+        "role": "assistant",
+        "content": "Understood. I have internalized the context and am ready to process data inputs."
+    }
+]
+
+CACHED_MESSAGE_3 = [
+    {
+        "role": "system",
+        "content": SYSTEM_PROMPT_3
+    },
+    {
+        "role": "assistant",
+        "content": "Understood. I have internalized the context and am ready to process data inputs."
+    }
+]
+
+CACHED_MESSAGE_4 = [
+    {
+        "role": "system",
+        "content": SYSTEM_PROMPT_4
     },
     {
         "role": "assistant",

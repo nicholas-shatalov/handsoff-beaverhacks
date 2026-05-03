@@ -1,1 +1,2 @@
-{"name": "click", "arguments": {"x": 846, "y": 45}}
+{"name": "click", "arguments": {"location": "the To field in the New Message window"}, "agent": "GUI"}
+{"name": "type_text", "arguments": {"text": "test@example.com"}, "agent": "Actions"}
