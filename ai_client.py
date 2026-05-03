@@ -25,7 +25,7 @@ def initialize():
     processor.cache_model(nemo2, config.CACHED_MESSAGE_2)
 
 def ask_nemotron_one(user_goal, text_input, image_input):
-    return processor.run_nemotron(nemo1, config.CACHED_MESSAGE_1, user_goal, text_input, image_input)
+    return processor.run_nemotron(nemo1, config.CACHED_MESSAGE_1, user_goal, text_input, image_input, json_format=False)
 
 def ask_nemotron_two(user_goal, text_input, image_input):
-    return processor.run_nemotron(nemo2, config.CACHED_MESSAGE_2, user_goal, text_input, image_input)
+    return processor.run_nemotron(nemo2, config.CACHED_MESSAGE_2, user_goal, text_input, image_input, json_format=True)

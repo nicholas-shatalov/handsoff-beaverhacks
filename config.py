@@ -53,12 +53,11 @@ You will be provided with a user goal and a screenshot of the current screen.
 Before doing any actions, read and understand the user goal. 
 Then look at the user screenshot and identify key UI landmarks such as headers, navbars, dialogs, forms, or buttons that help locate target elements.
 """ + JSON_PROMPT + """
-Then think about the set of actions needed to achieve the user goal and and output them in the exact order they should be executed, based on the provided list of actions.
-CRITICAL INSTRUCTIONS:
+Then think about the set of actions needed to achieve the user goal and and output them in the exact order they should be executed.
 1. You must output ONLY valid JSON.
 2. No markdown formatting, no backticks, no conversational text.
 3. If the user goal is NOT achievable, set the action to "error".
-4. You MUST use this following schema with NO additional fields:
+4. You MUST use this following schema:
 [
     {"name": "open_url", "arguments": {"url": "https://youtube.com"}},
     {"name": "type_text", "arguments": {"text": "cat videos"}},

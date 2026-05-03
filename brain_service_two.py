@@ -67,6 +67,7 @@ def start_brain_service():
             print(f"AI Response: {ai_response}")
 
             json_data_list = normalize_ai_response(ai_response)
+            print(f"Final Output nemo2: {json_data_list}")
             
             if not json_data_list or not isinstance(json_data_list, list):
                 error_payload = {
@@ -77,12 +78,11 @@ def start_brain_service():
                     json.dump(error_payload, f)
                 print("Error: On response from nemo2")
                 return
-
-            print(f"Final Output nemo2: {json.dumps(json_data_list[0])}")
             
             # Save action file
             with open(ACTION_FILE, "w") as f:
-                json.dump(json_data_list[0], f)
+                for json_packet in json_data_list:
+                    json.dump(json_packet, f)
             print("Saved action.json for execution")
             
             with open(ACTION_TRIGGER, "w") as f:

@@ -11,7 +11,6 @@ mode = False
 def main():
     # Initializes and caches models
     ai_client.initialize()
-    print(ai_client.config.SYSTEM_PROMPT_2)
     while True:
         if mode:
             eyes.main()
