@@ -1,1 +1,1 @@
-open Gmail
+open gmail, click compose
