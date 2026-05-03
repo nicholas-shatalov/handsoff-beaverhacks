@@ -1,6 +1,6 @@
 import brain_service_one
 import brain_service_two
-from nemotron_voice_jarvis import liveJarvis
+import liveJarvis
 import eyes
 import actions
 

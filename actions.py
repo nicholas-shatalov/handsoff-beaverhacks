@@ -7,6 +7,7 @@ import time
 import os
 
 IPC_FOLDER = "ipc_data_two"
+TOOLS_JSON_FILE = os.path.join(IPC_FOLDER, "tools.json")
 TRIGGER_FILE = os.path.join(IPC_FOLDER, "actiontrigger.txt")
 ACTION_FILE = os.path.join(IPC_FOLDER, "action.json")
 
@@ -80,7 +81,7 @@ def search_on_youtube(query: str):
     url = f"https://www.youtube.com/results?search_query={query.replace(' ', '+')}"
     open_url(url)
 
-with open("tools.json") as file:
+with open(TOOLS_JSON_FILE) as file:
     # make a nested list dict based off json
     tools = json.load(file)
 
@@ -113,8 +114,8 @@ def execute_tasks():
             with open(ACTION_FILE) as f:
                 actions = json.load(f)
             for action in actions:
-                execute_action(action["name"], action["argument"])
-                print(f"Action: {action["name"]} completed")
+                execute_action(action['name'], action['argument'])
+                print(f"Action: {action['name']} completed")
         except Exception as e:
             print("Actions failed")
         finally:
