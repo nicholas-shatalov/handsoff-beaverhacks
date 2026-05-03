@@ -18,11 +18,6 @@ def read_user_goal():
             goal = line.strip()
         return goal
 
-def encode_image(image_path):
-    """Converts the screenshot into a format the AI can read."""
-    with open(image_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode('utf-8')
-
 
 def normalize_ai_response(ai_response):
     """Safely convert the model response into a JSON-able Python object."""
@@ -59,11 +54,10 @@ def start_brain_service():
     print("Brain Service 2 Starting... watching for triggers")
     
     # Check if Member 2 has dropped the trigger file AND the screenshot
-    if os.path.exists(TRIGGER_FILE) and os.path.exists(SCREENSHOT_FILE) and os.path.exists(USER_GOAL_FILE):
+    if os.path.exists(TRIGGER_FILE) and os.path.exists(USER_GOAL_FILE):
         try:
             goal = read_user_goal()
-            screenshot.take_screenshot()
-            base64_img = encode_image(SCREENSHOT_FILE)
+            base64_img = screenshot.take_screenshot()
 
             ai_response = ai_client.ask_nemotron_two(user_goal=goal, text_input=None, image_input=base64_img)
             # print(f"AI Response: {ai_response}")
