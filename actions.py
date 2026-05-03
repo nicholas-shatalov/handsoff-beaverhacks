@@ -32,6 +32,9 @@ def open_url(url: str):
 def open_youtube():
     open_url("https://www.youtube.com")
 
+def search_browser(searchterm: str):
+    open_url("https://www.google.com/search?q=" + searchterm)
+
 def click(x: int, y: int):
     pyautogui.click(x, y)
 

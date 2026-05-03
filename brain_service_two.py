@@ -2,6 +2,7 @@ import os
 import base64
 import json
 import ai_client
+import screenshot
 
 IPC_FOLDER = "ipc_data_two"
 TRIGGER_FILE = os.path.join(IPC_FOLDER, "trigger.txt")
@@ -61,6 +62,7 @@ def start_brain_service():
     if os.path.exists(TRIGGER_FILE) and os.path.exists(SCREENSHOT_FILE) and os.path.exists(USER_GOAL_FILE):
         try:
             goal = read_user_goal()
+            screenshot.take_screenshot()
             base64_img = encode_image(SCREENSHOT_FILE)
 
             ai_response = ai_client.ask_nemotron_two(user_goal=goal, text_input=None, image_input=base64_img)

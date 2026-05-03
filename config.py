@@ -59,6 +59,7 @@ Then look at the user screenshot and identify key UI landmarks such as headers, 
 Then think about the set of actions needed to achieve the user goal and and output them in the exact order they should be executed.
 You are able to chain tasks together.
 Reference the actions you have available to you.
+Think about ways to complete the tasks with the actions given to you.
 If you are unable to perform a task, describe the reason why.
 1. You must output ONLY valid JSON.
 2. No markdown formatting, no backticks, no conversational text.

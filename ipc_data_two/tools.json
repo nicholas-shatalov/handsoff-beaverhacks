@@ -30,6 +30,20 @@
     {
         "type": "function",
         "function": {
+            "name": "search_browser",
+            "description": "Opens the browser and searches searchterms",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "searchterm": {"type": "string", "description": "Term to search"}
+                },
+                "required": ["searchterm"]
+            }
+        }
+    },
+    {
+        "type": "function",
+        "function": {
             "name": "open_youtube",
             "description": "Opens YouTube",
             "parameters": {
