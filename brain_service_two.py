@@ -2,6 +2,7 @@ import os
 import base64
 import json
 import ai_client
+import screenshot
 
 IPC_FOLDER = "ipc_data_two"
 TRIGGER_FILE = os.path.join(IPC_FOLDER, "trigger.txt")
@@ -16,11 +17,6 @@ def read_user_goal():
         for line in f:
             goal = line.strip()
         return goal
-
-def encode_image(image_path):
-    """Converts the screenshot into a format the AI can read."""
-    with open(image_path, "rb") as image_file:
-        return base64.b64encode(image_file.read()).decode('utf-8')
 
 
 def normalize_ai_response(ai_response):
@@ -58,13 +54,13 @@ def start_brain_service():
     print("Brain Service 2 Starting... watching for triggers")
     
     # Check if Member 2 has dropped the trigger file AND the screenshot
-    if os.path.exists(TRIGGER_FILE) and os.path.exists(SCREENSHOT_FILE) and os.path.exists(USER_GOAL_FILE):
+    if os.path.exists(TRIGGER_FILE) and os.path.exists(USER_GOAL_FILE):
         try:
             goal = read_user_goal()
-            base64_img = encode_image(SCREENSHOT_FILE)
+            base64_img = screenshot.take_screenshot()
 
             ai_response = ai_client.ask_nemotron_two(user_goal=goal, text_input=None, image_input=base64_img)
-            print(f"AI Response: {ai_response}")
+            # print(f"AI Response: {ai_response}")
 
             json_data_list = normalize_ai_response(ai_response)
             print(f"Final Output nemo2: {json_data_list}")
@@ -83,6 +79,7 @@ def start_brain_service():
             with open(ACTION_FILE, "w") as f:
                 for json_packet in json_data_list:
                     json.dump(json_packet, f)
+                    f.write("\n")
             print("Saved action.json for execution")
             
             with open(ACTION_TRIGGER, "w") as f:

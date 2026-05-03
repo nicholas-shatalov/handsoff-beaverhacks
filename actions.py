@@ -5,6 +5,7 @@ import pyautogui
 import pygetwindow as gw
 import time
 import os
+import screenshot
 
 IPC_FOLDER = "ipc_data_two"
 TOOLS_JSON_FILE = os.path.join(IPC_FOLDER, "tools.json")
@@ -32,8 +33,13 @@ def open_url(url: str):
 def open_youtube():
     open_url("https://www.youtube.com")
 
+def search_browser(searchterm: str):
+    open_url("https://www.google.com/search?q=" + searchterm)
+
 def click(x: int, y: int):
-    pyautogui.click(x, y)
+    real_x = int(x * screenshot.get_scale_x())
+    real_y = int(y * screenshot.get_scale_y())
+    pyautogui.click(real_x, real_y)
 
 def scroll(direction: str, amount: int = 3):
     try:
@@ -119,6 +125,7 @@ def execute_tasks():
                         continue
 
                     action = json.loads(line)
+                    print(f"Executing action: {action}")
                     execute_action(action['name'], action['arguments'])
                     print(f"Action: {action['name']} completed")
         except Exception as e:
