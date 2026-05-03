@@ -47,7 +47,7 @@ VALID_CHUNK_MS  = [80, 160, 560, 1120]
 
 WAKE_WORD       = "jarvis"
 SILENCE_TIMEOUT = 1.0
-OUTPUT_DIR      = "../ipc_data"
+OUTPUT_DIR      = "../ipc_data_one"
 OUTPUT_FILE     = os.path.join(OUTPUT_DIR, "transcript.txt")
 
 
