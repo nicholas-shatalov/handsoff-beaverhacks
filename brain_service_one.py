@@ -22,6 +22,7 @@ TRIGGER_FILE_TWO = os.path.join(IPC_FOLDER, "trigger2.txt")
 TRANSCRIPT_FILE = os.path.join(IPC_FOLDER, "transcript.txt")
 KEYWORD_FILE = os.path.join(IPC_FOLDER, "keyword.txt")
 USER_GOAL_FILE = os.path.join(IPC_FOLDER_TWO, "user_goal.txt")
+OUTPUT_TRIGGER = os.path.join(IPC_FOLDER_TWO, "trigger.txt")
 USER_DATA = ""
 
 # 4. The Master Prompt (Forces strict JSON output)
@@ -154,6 +155,7 @@ def start_brain_service():
                     os.remove(TRIGGER_FILE_ONE)
                 if os.path.exists(TRIGGER_FILE_TWO):
                     os.remove(TRIGGER_FILE_TWO)
+                break
                 
         # Pause briefly to prevent maxing out the CPU
         time.sleep(0.2)
